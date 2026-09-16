@@ -120,7 +120,9 @@ under. It happens to be an accurate tour of the codebase for humans too.
 
 Roster corrections, extra passes and scoring arguments are all welcome — see
 [`CONTRIBUTING.md`](CONTRIBUTING.md). CI runs `pnpm lint`, `pnpm typecheck` and
-`pnpm build` on every pull request.
+`pnpm build` on every pull request. Participation is covered by the
+[code of conduct](CODE_OF_CONDUCT.md); security issues go through
+[`SECURITY.md`](SECURITY.md) rather than a public issue.
 
 ## License
 

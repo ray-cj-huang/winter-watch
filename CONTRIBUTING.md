@@ -55,3 +55,8 @@ shell) only surface at build time. CI runs all three.
 [`CLAUDE.md`](CLAUDE.md) has the fuller set of conventions and invariants. It
 is aimed at AI coding assistants, but it describes the codebase accurately for
 humans too.
+
+By taking part you agree to the [code of conduct](CODE_OF_CONDUCT.md), which is
+short and amounts to being decent to people. Found something exploitable?
+Please report it privately — [`SECURITY.md`](SECURITY.md) explains how, and
+what is actually in scope for an app with no accounts and no database.
