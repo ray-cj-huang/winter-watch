@@ -8,9 +8,9 @@ against the current ENSO state and the live GFS run, and plots them on a map.
 
 ## Why it exists
 
-Seasonal forecasts and pass rosters are usually read separately. The interesting
-question is where they *agree* — a great forecast you can only reach for five
-blacked-out days is worth less than a good one you can ski any weekend.
+Seasonal forecasts and pass rosters are normally read separately. This puts them
+side by side, so you can see which of the resorts you can actually ski are the
+ones the winter pattern favours.
 
 ## Data
 
@@ -30,18 +30,19 @@ splitting on whitespace. It is exercised against all ~2,350 rows of history.
 
 Four inputs, all in `src/lib/score.ts`:
 
-1. **Teleconnection.** Each resort carries an `ensoSensitivity` in `[-1, 1]` —
-   how its winter precipitation responds to El Niño in the historical composites.
-   That is scaled by live event magnitude and by *flavour*: eastern-Pacific events
-   (warm Niño 1+2, cool Niño 4) load the subtropical jet hardest, which is the
-   mechanism that wets the southern tier and starves the north.
-2. **Elevation resilience.** El Niño winters run warm, so the snow line — not the
-   storm count — is usually the binding constraint. Base elevation is weighted
-   above summit: a high peak over a rainy base is still a rainy ski day.
-3. **Climatological baseline.** A favored mediocre year somewhere that averages
-   600 in still beats a favored year somewhere that averages 100 in.
-4. **Live GFS.** Once there is snow to forecast, the 16-day run takes over at a
-   65/35 blend with the seasonal signal. One model run is not a winter.
+1. **Teleconnection.** Each resort has an `ensoSensitivity` in `[-1, 1]` for how
+   its winter precipitation responded to past El Niños. That gets scaled by the
+   current event's magnitude and by its flavour: eastern-Pacific events (warm
+   Niño 1+2, cool Niño 4) steer the subtropical jet across the southern US, so
+   the south gets storms the north misses.
+2. **Elevation resilience.** El Niño winters run warm, so how high the snow
+   falls matters more than how often it storms. Base elevation outweighs summit,
+   because a high peak above a rainy base is still a rainy ski day.
+3. **Climatological baseline.** A mediocre year somewhere averaging 600 in of
+   snow still beats a good year somewhere averaging 100 in.
+4. **Live GFS.** Once snow shows up in the forecast, the 16-day run takes over,
+   mixed 65/35 with the seasonal signal so a single run does not decide the
+   order.
 
 In the northern preseason every US grid point reads zero, so the app says so and
 ranks on the seasonal signal instead of on noise. That choice is made *per region*,

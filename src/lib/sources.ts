@@ -33,7 +33,7 @@ export const SOURCES: Source[] = [
     publisher: 'NOAA Climate Prediction Center',
     title: 'ENSO: Recent Evolution, Current Status and Predictions',
     url: 'https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/lanina/enso_evolution-status-fcsts-web.pdf',
-    note: 'The full monthly diagnostic deck, issued the second Monday of each month.',
+    note: 'The full monthly diagnostic deck, published the second Monday of each month.',
     kind: 'noaa',
   },
   {
@@ -47,7 +47,7 @@ export const SOURCES: Source[] = [
     publisher: 'NOAA Climate Prediction Center',
     title: 'ENSO Blog',
     url: 'https://www.climate.gov/news-features/department/enso-blog',
-    note: 'Plain-language discussion of what the current state actually implies.',
+    note: 'Plain-language discussion of what the current state means.',
     kind: 'noaa',
   },
   {

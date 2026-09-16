@@ -70,8 +70,8 @@ export default async function Page() {
           El Niño Winter Watch
         </h1>
         <p className="font-serif text-lg italic text-ink-soft">
-          A live read on the snow season: the ocean signal straight from NOAA, the
-          regional split it implies, and which mountains your pass actually reaches.
+          Live NOAA data on this winter&apos;s El Niño, and which resorts on your
+          pass are best placed for it.
         </p>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs text-ink-faint">
           <span className="inline-flex items-center gap-2 rounded-sm bg-accent px-2.5 py-1 font-semibold uppercase tracking-widest text-white">
@@ -101,28 +101,29 @@ export default async function Page() {
           <div>
             <h3 className="font-serif text-lg">Seasonal signal</h3>
             <p className="mt-1.5 text-sm text-ink-soft">
-              Each resort carries a teleconnection coefficient — how its winter
-              precipitation responds to El Niño in the historical composites. That is
-              scaled by the live event magnitude and by its flavor: eastern-Pacific
-              events load the subtropical jet hardest, which is the mechanism that wets
-              the southern tier and starves the north.
+              Every resort has a coefficient for how its winter precipitation
+              responded to past El Niños. That gets scaled by how strong the current
+              event is and where its warmest water sits. Eastern-Pacific events steer
+              the subtropical jet across the southern US, so the south gets storms the
+              north misses.
             </p>
           </div>
           <div>
             <h3 className="font-serif text-lg">Elevation and warmth</h3>
             <p className="mt-1.5 text-sm text-ink-soft">
-              El Niño winters run warm, so the snow line — not the storm count — is
-              usually the binding constraint. Mountains with high bases absorb warm
-              storms; low bases take the same storm as rain. The score penalises low
-              terrain in proportion to event strength.
+              El Niño winters run warm, so how high the snow falls matters more than
+              how often it storms. A resort with a high base keeps the snow. A low one
+              gets the same storm as rain. Stronger events push the snow line higher,
+              so low resorts lose more.
             </p>
           </div>
           <div>
             <h3 className="font-serif text-lg">Live model runs</h3>
             <p className="mt-1.5 text-sm text-ink-soft">
-              Once there is snow to forecast, the 16-day NOAA GFS run takes over at a
-              65/35 blend with the seasonal signal. In the preseason every grid point
-              reads zero, so the app says so rather than ranking on noise.
+              Once snow shows up in the forecast, the 16-day NOAA GFS run takes over,
+              mixed 65/35 with the seasonal signal. Before the season starts every
+              point reads zero, so the app ranks on the seasonal signal and tells you
+              it is doing so.
             </p>
           </div>
         </div>
@@ -150,10 +151,10 @@ export default async function Page() {
 
         <p className="mt-4 border border-rule border-l-[3px] border-l-hot bg-surface px-4 py-3.5 text-sm text-ink-soft">
           <strong className="font-semibold">This is a model, not a NOAA product.</strong>{' '}
-          The ocean state and every forecast number are live NOAA data. The ranking on
-          top of them is this app&apos;s own, calibrated to published ENSO composite
-          patterns. For the official probabilistic outlook, go to the CPC seasonal
-          outlook linked below.
+          Every ocean and forecast number here comes from NOAA. The ranking built on
+          them is this app&apos;s own, based on published ENSO composite patterns. For
+          NOAA&apos;s official probability forecast, see the CPC seasonal outlook
+          below.
         </p>
       </section>
 

@@ -139,16 +139,16 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
         {passInfo.blurb}.{' '}
         {mode === 'seasonal' ? (
           <>
-            Ranking on the <strong className="font-semibold">seasonal</strong> ENSO signal
+            Ranking on the <strong className="font-semibold">seasonal</strong> ENSO
+            signal.
             {autoMode === 'seasonal' && modeOverride === null && (
-              <> — the GFS window is dry everywhere, so there is nothing live to rank on yet</>
+              <> The 16-day forecast is dry everywhere, so there is nothing live to rank yet.</>
             )}
-            .
           </>
         ) : (
           <>
-            Ranking on the <strong className="font-semibold">live GFS run</strong>, blended
-            65/35 with the seasonal signal — one model run is not a winter.
+            Ranking on the <strong className="font-semibold">live GFS run</strong>, mixed
+            65/35 with the seasonal signal so one model run does not decide the order.
           </>
         )}
       </p>

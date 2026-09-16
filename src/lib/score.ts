@@ -45,9 +45,9 @@ export function teleconnectionGain(enso: EnsoState): number {
 /**
  * Elevation resilience in [0, 1].
  *
- * El Nino winters run warm, so the snow line -- not the storm count -- is
- * usually the binding constraint. Base elevation matters more than summit,
- * because a high summit above a rainy base still means a rainy ski day.
+ * El Nino winters run warm, so how high the snow falls matters more than how
+ * often it storms. Base elevation outweighs summit, because a high peak above a
+ * rainy base is still a rainy ski day.
  */
 export function elevationResilience(r: Resort): number {
   const base = norm(r.baseElevationFt, 2000, 9500)
@@ -120,8 +120,8 @@ export function scoreResorts(
     const { score: seasonal, effect } = seasonalScore(resort, enso)
     const live = liveScore(forecast)
 
-    // In live mode the model run leads but the seasonal pattern still
-    // carries weight -- a single GFS run is not a winter.
+    // In live mode the model run leads, but the seasonal pattern keeps enough
+    // weight that a single GFS run cannot decide the order on its own.
     const score =
       mode === 'live' && live !== null ? live * 0.65 + seasonal * 0.35 : seasonal
 
