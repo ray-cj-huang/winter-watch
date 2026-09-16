@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import type { EnsoState } from '@/lib/enso'
+import { num } from '@/lib/format'
 import type { ResortForecast } from '@/lib/forecast'
 import type { MapGeometry, ProjectedPoint } from '@/lib/map-types'
 import { MACRO_LABELS } from '@/lib/map-types'
@@ -208,9 +209,9 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
                   { k: 'Pass fit', v: `${Math.round(selected.passFit)}` },
                   {
                     k: 'Vertical',
-                    v: `${(
-                      selected.resort.summitElevationFt - selected.resort.baseElevationFt
-                    ).toLocaleString()} ft`,
+                    v: `${num(
+                      selected.resort.summitElevationFt - selected.resort.baseElevationFt,
+                    )} ft`,
                   },
                 ].map((x) => (
                   <div key={x.k}>

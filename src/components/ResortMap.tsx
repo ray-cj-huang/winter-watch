@@ -3,6 +3,7 @@
 import { useId, useState } from 'react'
 import type { MapGeometry, ProjectedPoint } from '@/lib/map-types'
 import { VIEW_BOX } from '@/lib/map-types'
+import { num } from '@/lib/format'
 import { scoreColor } from '@/lib/palette'
 import type { ScoredResort } from '@/lib/score'
 import type { ScoreMode } from '@/lib/score'
@@ -156,7 +157,7 @@ function MapCallout({
         </p>
       )}
       <p className="tnum mt-1 font-mono text-[0.68rem] text-ink-faint">
-        Base {entry.resort.baseElevationFt.toLocaleString()} ft
+        Base {num(entry.resort.baseElevationFt)} ft
       </p>
     </div>
   )

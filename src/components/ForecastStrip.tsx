@@ -1,5 +1,6 @@
 'use client'
 
+import { num } from '@/lib/format'
 import type { ResortForecast } from '@/lib/forecast'
 
 /** 16-day GFS snowfall, one bar per day. */
@@ -47,7 +48,7 @@ export default function ForecastStrip({ forecast }: { forecast: ResortForecast }
       )}
 
       <p className="mt-1.5 font-mono text-[0.62rem] text-ink-faint">
-        Grid elevation {Math.round(forecast.modelElevationM).toLocaleString()} m
+        Grid elevation {num(Math.round(forecast.modelElevationM))} m
         {forecast.rainRiskDays > 0 && ` · ${forecast.rainRiskDays} day(s) warm enough for rain`}
       </p>
     </div>

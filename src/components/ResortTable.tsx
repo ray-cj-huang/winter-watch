@@ -1,5 +1,6 @@
 'use client'
 
+import { num } from '@/lib/format'
 import { scoreColor } from '@/lib/palette'
 import type { ScoredResort, ScoreMode } from '@/lib/score'
 import type { Access } from '@/lib/types'
@@ -81,7 +82,7 @@ function Row({
           ) : (
             <>
               <span className="tnum block font-mono text-sm text-ink-soft">
-                {resort.baseElevationFt.toLocaleString()}
+                {num(resort.baseElevationFt)}
               </span>
               <span className="block font-mono text-[0.62rem] uppercase tracking-wide text-ink-faint">
                 ft base
