@@ -22,9 +22,9 @@ const plexMono = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'El Nino Winter Watch',
+  title: 'El Niño Winter Watch',
   description:
-    'Live NOAA ENSO state and GFS forecasts ranked against what your Ikon pass actually reaches.',
+    'Live NOAA data on this winter\u2019s El Niño, and which resorts on your Ikon pass are best placed for it.',
 }
 
 export default function RootLayout({
