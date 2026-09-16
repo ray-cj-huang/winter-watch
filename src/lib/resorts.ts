@@ -115,7 +115,9 @@ export const RESORTS: Resort[] = [
     avgAnnualSnowIn: 90,
     ensoSensitivity: 0.90,
     access: both(unlimited(), days(5)),
-    website: 'https://www.snow-valley.com',
+    // Part of Big Bear Mountain Resort since 2023. snow-valley.com is now only
+    // a redirect here, and its HTTPS listener hangs, so link the operator.
+    website: 'https://www.bigbearmountainresort.com',
   },
 
   // ============================== UTAH =====================================
