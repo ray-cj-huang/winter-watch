@@ -1,0 +1,169 @@
+import { cacheLife, cacheTag } from 'next/cache'
+
+/** CPC refreshes the weekly SST file each Monday; ONI updates monthly. */
+export const CPC_WEEKLY_SST_URL = 'https://www.cpc.ncep.noaa.gov/data/indices/wksst9120.for'
+export const CPC_ONI_URL = 'https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt'
+
+export interface NinoRegions {
+  /** Sea surface temperature anomaly, degrees C, vs the 1991-2020 base period. */
+  nino12: number
+  nino3: number
+  nino34: number
+  nino4: number
+}
+
+export type EnsoPhase = 'La Nina' | 'Neutral' | 'El Nino'
+export type EnsoStrength = 'Neutral' | 'Weak' | 'Moderate' | 'Strong' | 'Very Strong'
+/** Eastern-Pacific vs Central-Pacific ("Modoki") flavour. */
+export type EnsoFlavor = 'Eastern Pacific' | 'Central Pacific' | 'Mixed'
+
+export interface EnsoState extends NinoRegions {
+  /** ISO date of the week the CPC observation is centred on. */
+  weekEnding: string
+  phase: EnsoPhase
+  strength: EnsoStrength
+  flavor: EnsoFlavor
+  /**
+   * Normalised event magnitude in [0, 1], from the Nino 3.4 anomaly.
+   * 2.0 C (the "very strong" threshold) maps to 1.0.
+   */
+  magnitude: number
+  /**
+   * East-west gradient in [0, 1]. High = eastern-Pacific flavour, which
+   * historically loads the subtropical jet across the southern US tier.
+   */
+  epGradient: number
+  /** Most recent Oceanic Nino Index 3-month season, e.g. "JJA 2026". */
+  oniSeason: string | null
+  oniValue: number | null
+  /** Trailing 12 weeks of Nino 3.4 anomalies, oldest first, for the sparkline. */
+  nino34History: { week: string; anomaly: number }[]
+  fetchedAt: string
+}
+
+const MONTHS: Record<string, number> = {
+  JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, JUN: 5,
+  JUL: 6, AUG: 7, SEP: 8, OCT: 9, NOV: 10, DEC: 11,
+}
+
+/** `09SEP2026` -> `2026-09-09`. */
+function parseCpcDate(token: string): string | null {
+  const m = /^(\d{2})([A-Z]{3})(\d{4})$/.exec(token)
+  if (!m) return null
+  const month = MONTHS[m[2]]
+  if (month === undefined) return null
+  return new Date(Date.UTC(Number(m[3]), month, Number(m[1]))).toISOString().slice(0, 10)
+}
+
+interface WeeklyRow extends NinoRegions {
+  week: string
+}
+
+/**
+ * The CPC weekly file is fixed-width and columns collide when an anomaly is
+ * negative (`22.4-0.1`), so pull every signed decimal token instead of
+ * splitting on whitespace. Column order is Nino1+2, Nino3, Nino3.4, Nino4,
+ * each as an (SST, anomaly) pair.
+ */
+export function parseWeeklySst(text: string): WeeklyRow[] {
+  const rows: WeeklyRow[] = []
+  for (const line of text.split('\n')) {
+    const m = /^\s*(\d{2}[A-Z]{3}\d{4})\s+(.+)$/.exec(line)
+    if (!m) continue
+    const week = parseCpcDate(m[1])
+    if (!week) continue
+    const nums = m[2].match(/-?\d+\.\d+/g)
+    if (!nums || nums.length < 8) continue
+    const v = nums.map(Number)
+    rows.push({ week, nino12: v[1], nino3: v[3], nino34: v[5], nino4: v[7] })
+  }
+  return rows
+}
+
+/** `  JJA 2026  29.09   1.80` -> season + anomaly. */
+export function parseOni(text: string): { season: string; value: number }[] {
+  const out: { season: string; value: number }[] = []
+  for (const line of text.split('\n')) {
+    const m = /^\s*([A-Z]{3})\s+(\d{4})\s+(-?\d+\.\d+)\s+(-?\d+\.\d+)\s*$/.exec(line)
+    if (!m) continue
+    out.push({ season: `${m[1]} ${m[2]}`, value: Number(m[4]) })
+  }
+  return out
+}
+
+export function classifyStrength(nino34: number): EnsoStrength {
+  const a = Math.abs(nino34)
+  if (a < 0.5) return 'Neutral'
+  if (a < 1.0) return 'Weak'
+  if (a < 1.5) return 'Moderate'
+  if (a < 2.0) return 'Strong'
+  return 'Very Strong'
+}
+
+export function classifyPhase(nino34: number): EnsoPhase {
+  if (nino34 >= 0.5) return 'El Nino'
+  if (nino34 <= -0.5) return 'La Nina'
+  return 'Neutral'
+}
+
+/**
+ * Eastern-Pacific events warm Nino 1+2 far more than Nino 4. The spread
+ * between them is the cleanest single-number proxy for event flavour.
+ */
+export function classifyFlavor(r: NinoRegions): { flavor: EnsoFlavor; epGradient: number } {
+  const spread = r.nino12 - r.nino4
+  const epGradient = clamp01(spread / 3)
+  if (spread >= 1.5) return { flavor: 'Eastern Pacific', epGradient }
+  if (spread <= -0.5) return { flavor: 'Central Pacific', epGradient }
+  return { flavor: 'Mixed', epGradient }
+}
+
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n))
+
+async function getText(url: string): Promise<string> {
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'winter-watch (github.com/ray-cj-huang/winter-watch)' },
+    signal: AbortSignal.timeout(20_000),
+  })
+  if (!res.ok) throw new Error(`${url} -> ${res.status}`)
+  return res.text()
+}
+
+/**
+ * Live ENSO state from NOAA CPC.
+ *
+ * Cached for an hour and tagged `noaa-enso`, so the scheduled refresh in
+ * `/api/refresh` can pull the new week the moment CPC publishes it.
+ */
+export async function getEnsoState(): Promise<EnsoState> {
+  'use cache'
+  cacheLife('hours')
+  cacheTag('noaa', 'noaa-enso')
+
+  const [sstText, oniText] = await Promise.all([
+    getText(CPC_WEEKLY_SST_URL),
+    getText(CPC_ONI_URL).catch(() => ''),
+  ])
+
+  const rows = parseWeeklySst(sstText)
+  if (rows.length === 0) throw new Error('CPC weekly SST file contained no parsable rows')
+
+  const latest = rows[rows.length - 1]
+  const { flavor, epGradient } = classifyFlavor(latest)
+  const oni = parseOni(oniText)
+  const latestOni = oni.length > 0 ? oni[oni.length - 1] : null
+
+  return {
+    ...latest,
+    weekEnding: latest.week,
+    phase: classifyPhase(latest.nino34),
+    strength: classifyStrength(latest.nino34),
+    flavor,
+    epGradient,
+    magnitude: clamp01(Math.abs(latest.nino34) / 2),
+    oniSeason: latestOni?.season ?? null,
+    oniValue: latestOni?.value ?? null,
+    nino34History: rows.slice(-12).map((r) => ({ week: r.week, anomaly: r.nino34 })),
+    fetchedAt: new Date().toISOString(),
+  }
+}
