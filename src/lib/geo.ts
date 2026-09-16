@@ -20,12 +20,10 @@ import { MACRO_LABELS, VIEW_BOX, type MapGeometry, type ProjectedPoint } from '.
 export { VIEW_BOX }
 export type { MapGeometry, ProjectedPoint }
 
-/**
- * Geometry is projected on the server and shipped to the client as plain SVG
- * path strings, so d3-geo and the topojson atlases never enter the client
- * bundle. World views are clipped to the region's bounding box first --
- * otherwise a 50m atlas serialises every country on earth into the payload.
- */
+// Geometry is projected here and shipped to the client as plain SVG path
+// strings, so d3-geo and the topojson atlases never enter the client bundle.
+// World views are clipped to the region's bounding box first -- otherwise a
+// 50m atlas serialises every country on earth into the payload.
 
 const PADDING = 12
 

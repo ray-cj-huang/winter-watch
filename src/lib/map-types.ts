@@ -1,9 +1,7 @@
 import type { MacroRegionId } from './types'
 
-/**
- * Client-safe half of the map module. `geo.ts` is server-only -- it pulls in
- * d3-geo and the topojson atlases -- so anything the browser needs lives here.
- */
+// Client-safe half of the map module. `geo.ts` is server-only -- it pulls in
+// d3-geo and the topojson atlases -- so anything the browser needs lives here.
 
 export const VIEW_BOX = { width: 820, height: 500 }
 

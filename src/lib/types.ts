@@ -47,7 +47,7 @@ export interface Resort {
    * Positive = favored in El Nino winters (subtropical jet loads the southern
    * tier); negative = on the dry side of the split (polar jet retreats north).
    * Derived from published ENSO composite anomaly patterns for DJF
-   * precipitation; see `docs/methodology.md`.
+   * precipitation. `score.ts` documents how the coefficient is applied.
    */
   ensoSensitivity: number
   /** Access by pass tier. A resort absent from `ikon-base` is full-Ikon only. */

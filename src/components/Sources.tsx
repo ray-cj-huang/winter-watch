@@ -8,9 +8,8 @@ const GROUPS = [
 ]
 
 /**
- * Table-of-contents layout: one line per source, with a leader rule running
- * to the publisher. Replaces a per-row border and a prose note that mostly
- * restated the title -- the note survives as the link's tooltip.
+ * Table-of-contents layout: one line per source, with a leader rule running to
+ * the publisher. Each source's note is the link's tooltip.
  */
 export default function Sources() {
   return (

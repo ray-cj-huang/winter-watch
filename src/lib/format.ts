@@ -9,10 +9,9 @@ export function nino(text: string): string {
 /**
  * Thousands separators, pinned to en-US.
  *
- * Bare `toLocaleString()` resolves against the *runtime's* locale, which
- * differs between the server (Node's default) and the browser. A de-DE client
- * would render "8.530" over a server-rendered "8,530" and trip a hydration
- * mismatch, so every user-facing number goes through here.
+ * Bare `toLocaleString()` follows the runtime's locale, which differs between
+ * server and browser: a de-DE client renders "8.530" over a server-rendered
+ * "8,530" and trips a hydration mismatch.
  */
 export function num(value: number): string {
   return value.toLocaleString('en-US')

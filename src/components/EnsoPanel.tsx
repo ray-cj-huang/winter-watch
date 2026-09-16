@@ -51,7 +51,6 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
     { name: nino('Nino 1+2'), value: enso.nino12 },
   ]
 
-  // Axis stretches to fit the data -- a genuine super El Nino runs past +4.
   // Axis follows the data rather than assuming a shape: no negative half
   // during an El Nino, and it still extends left if a region goes cold.
   const values = regions.map((r) => r.value)

@@ -59,13 +59,35 @@ These are load-bearing. Breaking one is a bug even if it typechecks.
 - **The score is a model, not a NOAA product.** Any UI that presents a ranking
   keeps that distinction visible. Do not soften the disclaimers.
 
+## Comments
+
+The code should read without them. Follow
+[TSDoc](https://tsdoc.org/) and the
+[Google TypeScript style guide](https://google.github.io/styleguide/tsguide.html#comments-documentation):
+
+- **Doc comments are for callers, line comments are for implementers.** Reach
+  for `/** … */` when someone using the export needs to know something, and for
+  `//` when the note is about how the body works.
+- **A doc comment documents the declaration directly beneath it.** With a blank
+  line between them it documents nothing — if the note is about the file, make
+  it a `//` comment.
+- **Never restate the type signature.** TypeScript already says what the
+  parameters and the return are. Add `@param` / `@returns` only when they carry
+  something the types cannot.
+- **No decorative comments.** No `// ==== SECTION ====` banners, no `// ---`
+  dividers, no boxed asterisks. If a file needs signposting to navigate, split
+  the file.
+- **No changelog.** "Replaces the old X" belongs in the commit message, which
+  is where anyone can still find it.
+- **Say why, not what.** A parser quirk, a NOAA cadence, a weighting choice, a
+  threshold someone would otherwise tune blindly. If a comment restates the
+  line below it, delete the comment.
+
 ## Conventions
 
 - No semicolons, single quotes, 2-space indent. Match the file you are in.
 - Server Components by default; add `'use client'` only where interaction needs
   it, and keep those leaves small.
-- Comments explain *why* — a parser quirk, a NOAA cadence, a weighting choice.
-  Skip comments that restate the code.
 - Tailwind v4 with theme tokens from `src/app/globals.css` (`ink`, `ink-soft`,
   `ink-faint`, `rule`, `surface`, `accent`). Do not reintroduce one-off hex
   values or arbitrary font sizes.

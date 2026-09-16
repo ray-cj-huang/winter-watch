@@ -1,15 +1,10 @@
 import type { Access, PassId, Resort } from './types'
 
-/**
- * 2026-27 Ikon roster.
- *
- * IMPORTANT: Alterra adjusts both the roster and the blackout calendar between
- * announcement and season, and secondary sources disagree on the details.
- * Treat ikonpass.com as authoritative before buying anything. This file is the
- * single place to correct access data -- nothing else hardcodes a roster.
- */
+// 2026-27 Ikon roster, and the single place to correct access data -- nothing
+// else hardcodes one. Alterra adjusts both the roster and the blackout
+// calendar between announcement and season, and secondary sources disagree on
+// the details, so treat ikonpass.com as authoritative.
 
-// --- access shorthand -------------------------------------------------------
 const unlimited = (note?: string): Access => ({ kind: 'unlimited', blackouts: false, note })
 /** Unlimited access that still honours the holiday blackout calendar. */
 const unlimitedBlackout = (note?: string): Access => ({ kind: 'unlimited', blackouts: true, note })
@@ -36,7 +31,6 @@ export const BASE_BLACKOUT_DATES = [
 ]
 
 export const RESORTS: Resort[] = [
-  // ======================= CALIFORNIA / SIERRA =============================
   {
     id: 'palisades-tahoe',
     name: 'Palisades Tahoe',
@@ -119,8 +113,6 @@ export const RESORTS: Resort[] = [
     // a redirect here, and its HTTPS listener hangs, so link the operator.
     website: 'https://www.bigbearmountainresort.com',
   },
-
-  // ============================== UTAH =====================================
   {
     id: 'alta',
     name: 'Alta',
@@ -217,8 +209,6 @@ export const RESORTS: Resort[] = [
     access: fullOnly(days(7)),
     website: 'https://www.snowbasin.com',
   },
-
-  // ============================ COLORADO ===================================
   {
     id: 'aspen-snowmass',
     name: 'Snowmass',
@@ -315,8 +305,6 @@ export const RESORTS: Resort[] = [
     access: both(unlimited(), days(5)),
     website: 'https://www.eldora.com',
   },
-
-  // =========================== NEW MEXICO ==================================
   {
     id: 'taos',
     name: 'Taos Ski Valley',
@@ -333,8 +321,6 @@ export const RESORTS: Resort[] = [
     access: both(days(7), days(5)),
     website: 'https://www.skitaos.com',
   },
-
-  // ======================= NORTHERN ROCKIES ================================
   {
     id: 'jackson-hole',
     name: 'Jackson Hole',
@@ -399,8 +385,6 @@ export const RESORTS: Resort[] = [
     access: both(days(7), days(5)),
     website: 'https://www.schweitzer.com',
   },
-
-  // ======================= PACIFIC NORTHWEST ===============================
   {
     id: 'crystal-mountain',
     name: 'Crystal Mountain',
@@ -449,8 +433,6 @@ export const RESORTS: Resort[] = [
     access: both(unlimitedBlackout(), days(5)),
     website: 'https://www.mtbachelor.com',
   },
-
-  // ============================ US EAST ====================================
   {
     id: 'killington',
     name: 'Killington',
@@ -595,8 +577,6 @@ export const RESORTS: Resort[] = [
     access: both(unlimitedBlackout(), days(5)),
     website: 'https://www.highlandsharborsprings.com',
   },
-
-  // ========================== CANADA WEST ==================================
   {
     id: 'revelstoke',
     name: 'Revelstoke',
@@ -725,8 +705,6 @@ export const RESORTS: Resort[] = [
     access: both(days(7), days(5)),
     website: 'https://www.panoramaresort.com',
   },
-
-  // ========================== CANADA EAST ==================================
   {
     id: 'tremblant',
     name: 'Mont Tremblant',
@@ -775,8 +753,6 @@ export const RESORTS: Resort[] = [
     access: both(days(7), days(5)),
     website: 'https://mont-sainte-anne.com',
   },
-
-  // ============================= EUROPE ====================================
   {
     id: 'zermatt',
     name: 'Zermatt',
@@ -873,8 +849,6 @@ export const RESORTS: Resort[] = [
     access: both(days(7), days(5)),
     website: 'https://www.grandvalira.com',
   },
-
-  // ============================== JAPAN ====================================
   {
     id: 'niseko',
     name: 'Niseko United',
@@ -923,8 +897,6 @@ export const RESORTS: Resort[] = [
     access: both(days(7), days(5)),
     website: 'https://www.lottehotel.com/arai-resort',
   },
-
-  // ====================== SOUTHERN HEMISPHERE ==============================
   {
     id: 'thredbo',
     name: 'Thredbo',
