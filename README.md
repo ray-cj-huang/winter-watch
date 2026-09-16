@@ -69,8 +69,10 @@ Next.js 16 (App Router, Cache Components), React 19, Tailwind v4, TypeScript, pn
 
 - NOAA fetches are wrapped in `use cache` with `cacheLife('hours')` and tagged
   `noaa`, so the page prerenders as a static shell and refreshes on a schedule.
-- `GET /api/refresh` invalidates the `noaa` tag. Vercel Cron calls it every six
-  hours (`vercel.ts`); it is also safe to call by hand when CPC publishes.
+- `GET /api/refresh` invalidates the `noaa` tag. Vercel Cron calls it daily
+  (`vercel.ts`) — Hobby plans reject anything more frequent, and the cached
+  fetches self-revalidate hourly anyway, so the cron is a floor rather than the
+  refresh path. It is also safe to call by hand when CPC publishes.
 - Map geometry is projected **server-side** into plain SVG path strings, so
   d3-geo and the topojson atlases never reach the client bundle. World views are
   clipped to each region's bounding box first.
