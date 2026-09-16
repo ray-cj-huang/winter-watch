@@ -969,7 +969,7 @@ export const RESORTS: Resort[] = [
     avgAnnualSnowIn: 120,
     ensoSensitivity: 0.15,
     access: both(days(7), days(5)),
-    website: 'https://www.nzski.com/coronet-peak',
+    website: 'https://www.coronetpeak.co.nz',
   },
   {
     id: 'valle-nevado',

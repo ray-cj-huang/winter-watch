@@ -18,9 +18,9 @@ Everything numeric is live NOAA, re-fetched on a schedule. Nothing is hardcoded.
 
 | Source | Used for | Cadence |
 | --- | --- | --- |
-| [CPC weekly Niño SSTs](https://www.cpc.ncep.noaa.gov/data/indices/wksst9120.for) | Niño 1+2 / 3 / 3.4 / 4 anomalies, event strength and flavour | Mondays |
+| [CPC weekly Niño SSTs](https://www.cpc.ncep.noaa.gov/data/indices/wksst9120.for) | Niño 1+2 / 3 / 3.4 / 4 anomalies, event strength and flavour | Weekly (Mondays) |
 | [CPC Oceanic Niño Index](https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt) | Official 3-month running mean | Monthly |
-| [NOAA GFS](https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast) (via Open-Meteo) | 16-day point forecasts for all 58 resorts | 00/06/12/18Z |
+| [NOAA GFS](https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast) (via Open-Meteo) | 16-day point forecasts for all 58 resorts | 4× daily (every 6 hours, UTC) |
 
 The CPC weekly file is fixed-width and its columns collide when an anomaly is
 negative (`22.4-0.1`), so the parser pulls signed decimal tokens rather than
@@ -59,7 +59,7 @@ published ENSO composite patterns. For the official probabilistic outlook, see t
 `src/lib/resorts.ts` is the single source of truth for access, day limits and
 blackouts — nothing else hardcodes a roster. Alterra adjusts both the roster and
 the blackout calendar between announcement and season, and secondary sources
-disagree on the details, so **verify on [ikonpass.com](https://www.ikonpass.com/en/ski-resorts)
+disagree on the details, so **verify on [ikonpass.com](https://www.ikonpass.com/en/destinations)
 before buying anything.** Epic and other passes are next; adding one means adding
 a `PassId` and an `access` entry per resort.
 
@@ -108,7 +108,7 @@ things and reading the diffs. Worth knowing where that does and does not matter:
   them.
 - **The pass roster is hand-compiled** from published Alterra material, so it
   can be wrong or go stale. Check
-  [ikonpass.com](https://www.ikonpass.com/en/ski-resorts) before buying
+  [ikonpass.com](https://www.ikonpass.com/en/destinations) before buying
   anything.
 - **None of this is a forecast.** For the official probabilistic outlook, see the
   [CPC seasonal outlooks](https://www.cpc.ncep.noaa.gov/products/predictions/long_range/seasonal.php).

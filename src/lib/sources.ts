@@ -88,7 +88,7 @@ export const SOURCES: Source[] = [
   {
     publisher: 'Ikon Pass',
     title: 'Official destinations, access and blackout dates',
-    url: 'https://www.ikonpass.com/en/ski-resorts',
+    url: 'https://www.ikonpass.com/en/destinations',
     note: 'Authoritative on the roster. Alterra adjusts both roster and blackouts between announcement and season -- verify here before buying.',
     kind: 'pass',
   },

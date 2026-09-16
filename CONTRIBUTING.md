@@ -31,7 +31,7 @@ shell) only surface at build time. CI runs all three.
 - **Pass roster corrections.** [`src/lib/resorts.ts`](src/lib/resorts.ts) is
   the single source of truth for access tiers, day limits and blackouts.
   Alterra changes these between announcement and season, so fixes here age
-  well. Please link the [ikonpass.com](https://www.ikonpass.com/en/ski-resorts)
+  well. Please link the [ikonpass.com](https://www.ikonpass.com/en/destinations)
   page you checked against.
 - **Another pass.** Adding Epic or Mountain Collective means adding a `PassId`
   and an `access` entry per resort — no second table.
