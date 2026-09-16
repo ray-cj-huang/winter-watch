@@ -53,5 +53,5 @@ shell) only surface at build time. CI runs all three.
   know what to look at closely.
 
 [`CLAUDE.md`](CLAUDE.md) has the fuller set of conventions and invariants. It
-is written for Claude Code, but it is an accurate description of the codebase
-for humans too.
+is aimed at AI coding assistants, but it describes the codebase accurately for
+humans too.

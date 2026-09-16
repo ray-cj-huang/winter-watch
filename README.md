@@ -95,29 +95,26 @@ pnpm dev
 Deploys to Vercel with no configuration beyond `vercel.ts`. Set `CRON_SECRET` in
 project settings so the refresh endpoint is not publicly callable.
 
-## Built with Claude Code
+## Built with AI
 
-This project was written largely by [Claude Code](https://claude.com/claude-code),
-with a human directing the work and reviewing every change. That is disclosed
-here because it is fair context for anyone reading the code or trusting the
-output:
+Most of this was written by an AI coding assistant, with a human pointing it at
+things and reading the diffs. Worth knowing where that does and does not matter:
 
-- **The data is verified; the judgement is not peer-reviewed.** Every number
-  shown comes from a live NOAA endpoint, and the awkward parts — the fixed-width
-  CPC weekly file especially — were tested against the real feeds rather than
-  invented fixtures. The scoring weights in `src/lib/score.ts` are an editorial
-  reading of published ENSO composite patterns. They are documented so you can
-  disagree with them.
-- **The pass data is a secondary source.** The roster in `src/lib/resorts.ts`
-  was compiled from published Alterra material, not from an official feed. It
-  can be wrong or go stale. Verify on
+- **The numbers are real; the opinions are mine.** Every value on the page comes
+  from a live NOAA endpoint, and the fiddly parts — that fixed-width CPC weekly
+  file especially — were checked against the actual feeds, not invented
+  fixtures. The scoring weights in `src/lib/score.ts` are one reading of
+  published ENSO composites. They are written down so you can disagree with
+  them.
+- **The pass roster is hand-compiled** from published Alterra material, so it
+  can be wrong or go stale. Check
   [ikonpass.com](https://www.ikonpass.com/en/ski-resorts) before buying
   anything.
-- **Nothing here is a forecast.** For an official probabilistic outlook, use the
+- **None of this is a forecast.** For the official probabilistic outlook, see the
   [CPC seasonal outlooks](https://www.cpc.ncep.noaa.gov/products/predictions/long_range/seasonal.php).
 
 [`CLAUDE.md`](CLAUDE.md) holds the conventions and invariants the assistant works
-under. It doubles as an accurate description of the codebase for humans.
+under. It happens to be an accurate tour of the codebase for humans too.
 
 ## Contributing
 
