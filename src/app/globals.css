@@ -10,7 +10,7 @@
   --surface-sunk: #dfe6e9;
   --ink: #0c1b24;
   --ink-soft: #465964;
-  --ink-faint: #788b95;
+  --ink-faint: #576b76;
   --rule: #c6d2d8;
   --rule-strong: #a9b9c1;
 
@@ -21,7 +21,6 @@
   --hot: #c03d26;
   --accent: #c03d26;
 
-  --shadow: 0 1px 2px rgba(12, 27, 36, 0.06);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,7 +30,7 @@
     --surface-sunk: #061019;
     --ink: #e4ecf0;
     --ink-soft: #9bafba;
-    --ink-faint: #6b808c;
+    --ink-faint: #718691;
     --rule: #1c3543;
     --rule-strong: #2c4b5c;
     --cold: #4b8ac7;
@@ -40,7 +39,6 @@
     --warm: #efb552;
     --hot: #f0603d;
     --accent: #f0603d;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
   }
 }
 
@@ -50,7 +48,7 @@
   --surface-sunk: #061019;
   --ink: #e4ecf0;
   --ink-soft: #9bafba;
-  --ink-faint: #6b808c;
+  --ink-faint: #718691;
   --rule: #1c3543;
   --rule-strong: #2c4b5c;
   --cold: #4b8ac7;
@@ -59,10 +57,11 @@
   --warm: #efb552;
   --hot: #f0603d;
   --accent: #f0603d;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 @theme inline {
+  /* Colors resolve through the palette vars above so dark mode overrides
+     flow into every generated utility. */
   --color-paper: var(--paper);
   --color-surface: var(--surface);
   --color-surface-sunk: var(--surface-sunk);
@@ -73,12 +72,23 @@
   --color-rule-strong: var(--rule-strong);
   --color-cold: var(--cold);
   --color-cool: var(--cool);
+  --color-neutral-anom: var(--neutral-anom);
   --color-warm: var(--warm);
   --color-hot: var(--hot);
   --color-accent: var(--accent);
+
   --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  /* Two steps below Tailwind's `xs`, which is as small as the default scale
+     goes. Everything else uses the stock scale. */
+  --text-micro: 0.62rem;
+  --text-micro--line-height: 1.4;
+  --text-meta: 0.68rem;
+  --text-meta--line-height: 1.45;
+
+  --tracking-eyebrow: 0.14em;
 }
 
 * {
@@ -102,15 +112,16 @@ h3 {
   text-wrap: balance;
 }
 
-.eyebrow {
+/* Deliberately sets no font-size: pair it with a text-* utility at the call
+   site so the two never fight over cascade order. */
+@utility eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.14em;
+  letter-spacing: var(--tracking-eyebrow);
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--color-ink-faint);
 }
 
-.tnum {
+@utility tnum {
   font-variant-numeric: tabular-nums;
 }
 

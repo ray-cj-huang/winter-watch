@@ -2,10 +2,37 @@ import type { EnsoState } from '@/lib/enso'
 import { nino } from '@/lib/format'
 import { anomalyColor } from '@/lib/palette'
 
-function Vital({ label, value, unit }: { label: string; value: string; unit?: string }) {
+/** Lowercased mid-sentence, but Pacific stays a proper noun. */
+const FLAVOR_INLINE: Record<EnsoState['flavor'], string> = {
+  'Eastern Pacific': 'eastern-Pacific',
+  'Central Pacific': 'central-Pacific',
+  Mixed: 'mixed',
+}
+
+const FLAVOR_CONSEQUENCE: Record<EnsoState['flavor'], string> = {
+  'Eastern Pacific':
+    'Those years push the subtropical jet across the southern US, which usually means a wet Southwest and a dry Pacific Northwest.',
+  'Central Pacific':
+    'Those years keep the storm track further west, so the Southwest signal is weaker and less reliable than the numbers suggest.',
+  Mixed:
+    'The pattern sits between the two usual flavours, so expect a weaker regional signal than the numbers alone imply.',
+}
+import SectionHeader from './SectionHeader'
+
+function Vital({
+  label,
+  value,
+  unit,
+  className = '',
+}: {
+  label: string
+  value: string
+  unit?: string
+  className?: string
+}) {
   return (
-    <div className="flex flex-col gap-0.5 bg-surface px-4 py-3">
-      <dt className="font-mono text-[0.7rem] uppercase tracking-[0.1em] text-ink-faint">
+    <div className={`flex flex-col gap-0.5 bg-surface px-4 py-3 ${className}`}>
+      <dt className="font-mono text-meta uppercase tracking-widest text-ink-faint">
         {label}
       </dt>
       <dd className="tnum font-serif text-2xl leading-none">
@@ -25,9 +52,12 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
   ]
 
   // Axis stretches to fit the data -- a genuine super El Nino runs past +4.
-  const maxAnom = Math.max(4, Math.ceil(Math.max(...regions.map((r) => r.value))))
-  const min = -1
-  const span = maxAnom - min
+  // Axis follows the data rather than assuming a shape: no negative half
+  // during an El Nino, and it still extends left if a region goes cold.
+  const values = regions.map((r) => r.value)
+  const min = Math.min(0, Math.floor(Math.min(...values)))
+  const max = Math.max(1, Math.ceil(Math.max(...values)))
+  const span = max - min
   const zeroPct = ((0 - min) / span) * 100
   const ticks = Array.from({ length: span + 1 }, (_, i) => min + i)
 
@@ -40,10 +70,7 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
 
   return (
     <section>
-      <div className="mb-5 flex flex-wrap items-baseline justify-between gap-4 border-b border-rule pb-2.5">
-        <h2 className="font-serif text-2xl">Ocean state</h2>
-        <p className="eyebrow">NOAA CPC · week of {observed}</p>
-      </div>
+      <SectionHeader title="Ocean state" meta={<>NOAA CPC · week of {observed}</>} />
 
       <dl className="grid grid-cols-2 gap-px border border-rule bg-rule sm:grid-cols-3 lg:grid-cols-5">
         <Vital label="Phase" value={nino(enso.phase)} />
@@ -62,7 +89,7 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
           }
           unit={enso.oniValue === null ? undefined : '°C'}
         />
-        <Vital label="Flavor" value={enso.flavor} />
+        <Vital label="Flavor" value={enso.flavor} className="col-span-2 lg:col-span-1" />
       </dl>
 
       <div className="mt-6 flex flex-col gap-2.5">
@@ -72,8 +99,7 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
           return (
             <div
               key={r.name}
-              className="grid items-center gap-3"
-              style={{ gridTemplateColumns: '5rem 1fr 3rem' }}
+              className="grid grid-cols-[5rem_1fr_3rem] items-center gap-3"
             >
               <span className="text-right font-mono text-xs text-ink-soft">{r.name}</span>
               <span className="relative block h-[22px] bg-surface-sunk">
@@ -98,13 +124,13 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
           )
         })}
 
-        <div className="grid gap-3" style={{ gridTemplateColumns: '5rem 1fr 3rem' }}>
+        <div className="grid grid-cols-[5rem_1fr_3rem] gap-3">
           <span />
           <span className="relative block h-5">
             {ticks.map((t) => (
               <span
                 key={t}
-                className="tnum absolute -translate-x-1/2 font-mono text-[0.68rem] text-ink-faint"
+                className="tnum absolute -translate-x-1/2 font-mono text-meta text-ink-faint"
                 style={{ left: `${((t - min) / span) * 100}%` }}
               >
                 {t > 0 ? `+${t}` : t}
@@ -115,15 +141,14 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
         </div>
       </div>
 
-      <p className="mt-4 max-w-[62ch] text-sm text-ink-faint">
-        Sea surface temperature departure from normal, °C, against the 1991–2020 base
-        period. The west–east gradient is the tell:{' '}
+      <p className="mt-4 text-sm text-ink-faint">
+        Each bar is one Niño region&apos;s sea surface temperature against its
+        1991–2020 average. The warmest water sits{' '}
         <strong className="font-semibold text-ink-soft">
-          {enso.nino12 > enso.nino4 ? 'warmest off South America' : 'warmest near the Date Line'}
-        </strong>{' '}
-        marks this as {enso.flavor === 'Eastern Pacific' ? 'an' : 'a'}{' '}
-        <em>{enso.flavor.toLowerCase()}</em> event. Eastern-Pacific events load the
-        subtropical jet and drive warmer, wetter storms into the US Southwest.
+          {enso.nino12 > enso.nino4 ? 'off South America' : 'near the Date Line'}
+        </strong>
+        , which makes this {enso.flavor === 'Eastern Pacific' ? 'an' : 'a'}{' '}
+        {FLAVOR_INLINE[enso.flavor]} event. {FLAVOR_CONSEQUENCE[enso.flavor]}
       </p>
     </section>
   )

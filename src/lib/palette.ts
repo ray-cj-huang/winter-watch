@@ -3,10 +3,8 @@
  * means the same thing. Cold = favored, hot = on the dry side of the split.
  */
 export const SCORE_BANDS = [
-  { min: 70, label: 'Favored', varName: '--cold' },
-  { min: 58, label: 'Leaning favorable', varName: '--cool' },
-  { min: 45, label: 'Neutral', varName: '--neutral-anom' },
-  { min: 32, label: 'Leaning unfavorable', varName: '--warm' },
+  { min: 60, label: 'Favored', varName: '--cold' },
+  { min: 38, label: 'Neutral', varName: '--neutral-anom' },
   { min: -Infinity, label: 'Unfavorable', varName: '--hot' },
 ] as const
 

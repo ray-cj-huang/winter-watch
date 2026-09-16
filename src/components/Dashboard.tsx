@@ -6,13 +6,13 @@ import { num } from '@/lib/format'
 import type { ResortForecast } from '@/lib/forecast'
 import type { MapGeometry, ProjectedPoint } from '@/lib/map-types'
 import { MACRO_LABELS } from '@/lib/map-types'
-import { SCORE_BANDS } from '@/lib/palette'
 import { RESORTS } from '@/lib/resorts'
 import { pickMode, scoreResorts, type ScoreMode } from '@/lib/score'
 import type { MacroRegionId, PassId } from '@/lib/types'
 import ResortMap from './ResortMap'
 import ResortTable from './ResortTable'
 import ForecastStrip from './ForecastStrip'
+import SectionHeader from './SectionHeader'
 
 const PASSES: { id: PassId; label: string; blurb: string }[] = [
   { id: 'ikon-base', label: 'Ikon Base', blurb: 'Base tier · 5 days at most destinations' },
@@ -41,8 +41,8 @@ function Segmented<T extends string>({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="eyebrow text-[0.65rem]">{label}</span>
-      <div role="group" aria-label={label} className="flex flex-wrap gap-px bg-rule">
+      <span className="eyebrow text-micro">{label}</span>
+      <div role="group" aria-label={label} className="flex flex-wrap gap-1">
         {options.map((o) => (
           <button
             key={o.id}
@@ -50,10 +50,10 @@ function Segmented<T extends string>({
             disabled={o.disabled}
             aria-pressed={value === o.id}
             onClick={() => onChange(o.id)}
-            className={`px-3 py-1.5 font-mono text-xs uppercase tracking-[0.06em] transition-colors disabled:cursor-not-allowed disabled:text-ink-faint/50 ${
+            className={`border px-3 py-1.5 font-mono text-xs uppercase tracking-wider transition-colors disabled:cursor-not-allowed disabled:text-ink-faint/50 ${
               value === o.id
-                ? 'bg-ink text-paper'
-                : 'bg-surface text-ink-soft hover:bg-surface-sunk'
+                ? 'border-ink bg-ink text-paper'
+                : 'border-rule bg-surface text-ink-soft hover:bg-surface-sunk'
             }`}
           >
             {o.label}
@@ -98,12 +98,7 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
 
   return (
     <section className="pt-10">
-      <div className="mb-5 flex flex-wrap items-baseline justify-between gap-4 border-b border-rule pb-2.5">
-        <h2 className="font-serif text-2xl">Your pass, mapped to the signal</h2>
-        <p className="eyebrow">
-          {scored.length} destination{scored.length === 1 ? '' : 's'}
-        </p>
-      </div>
+      <SectionHeader title="Your pass, mapped to the signal" meta={<>{scored.length} destination{scored.length === 1 ? '' : 's'}</>} />
 
       <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
         <Segmented
@@ -140,7 +135,7 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
         />
       </div>
 
-      <p className="mt-3 max-w-[70ch] text-sm text-ink-soft">
+      <p className="mt-3 text-sm text-ink-soft">
         {passInfo.blurb}.{' '}
         {mode === 'seasonal' ? (
           <>
@@ -159,31 +154,18 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
       </p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-        <div>
+        <div className="min-w-0">
           <div className="border border-rule bg-surface p-2">
             <ResortMap
               geometry={maps[macro]}
               points={points[macro]}
-              scored={scored}
-              mode={mode}
+                scored={scored}
+                mode={mode}
               selectedId={selectedId}
               onSelect={setSelectedId}
             />
           </div>
 
-          <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
-            {SCORE_BANDS.map((b) => (
-              <li key={b.label} className="flex items-center gap-1.5">
-                <span
-                  className="inline-block h-2.5 w-2.5 rounded-full"
-                  style={{ background: `var(${b.varName})` }}
-                />
-                <span className="font-mono text-[0.66rem] uppercase tracking-wide text-ink-faint">
-                  {b.label}
-                </span>
-              </li>
-            ))}
-          </ul>
 
           {selected && (
             <div className="mt-4 border border-rule bg-surface p-4">
@@ -193,7 +175,7 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
                   href={selected.resort.website}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-mono text-[0.7rem] uppercase tracking-wide text-accent underline underline-offset-4"
+                  className="font-mono text-meta uppercase tracking-wide text-accent underline underline-offset-4"
                 >
                   Resort site ↗
                 </a>
@@ -206,7 +188,10 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
                     k: 'Live GFS',
                     v: selected.liveScore === null ? '—' : `${Math.round(selected.liveScore)}`,
                   },
-                  { k: 'Pass fit', v: `${Math.round(selected.passFit)}` },
+                  {
+                    k: 'Avg snow',
+                    v: `${selected.resort.avgAnnualSnowIn}"`,
+                  },
                   {
                     k: 'Vertical',
                     v: `${num(
@@ -215,7 +200,7 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
                   },
                 ].map((x) => (
                   <div key={x.k}>
-                    <dt className="font-mono text-[0.62rem] uppercase tracking-wide text-ink-faint">
+                    <dt className="font-mono text-micro uppercase tracking-wide text-ink-faint">
                       {x.k}
                     </dt>
                     <dd className="tnum font-mono text-base">{x.v}</dd>
@@ -225,7 +210,7 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
 
               {selected.forecast && <ForecastStrip forecast={selected.forecast} />}
 
-              <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[0.68rem] text-ink-faint">
+              <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-meta text-ink-faint">
                 <a
                   className="underline underline-offset-4 hover:text-accent"
                   href={`https://forecast.weather.gov/MapClick.php?lat=${selected.resort.lat}&lon=${selected.resort.lon}`}
@@ -247,12 +232,14 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
           )}
         </div>
 
-        <ResortTable
-          scored={scored}
-          mode={mode}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-        />
+        <div className="min-w-0">
+          <ResortTable
+            scored={scored}
+            mode={mode}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+          />
+        </div>
       </div>
     </section>
   )

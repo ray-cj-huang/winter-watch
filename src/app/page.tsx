@@ -9,6 +9,7 @@ import { buildMap, projectPoints } from '@/lib/geo'
 import { MACRO_LABELS, type MapGeometry, type ProjectedPoint } from '@/lib/map-types'
 import { BASE_BLACKOUT_DATES, RESORTS } from '@/lib/resorts'
 import type { MacroRegionId } from '@/lib/types'
+import SectionHeader from '@/components/SectionHeader'
 
 const MACROS = Object.keys(MACRO_LABELS) as MacroRegionId[]
 
@@ -64,16 +65,16 @@ export default async function Page() {
   return (
     <div className="mx-auto max-w-[68rem] px-5 pb-20">
       <header className="flex flex-col gap-3.5 border-b-2 border-ink pb-5 pt-11">
-        <p className="eyebrow">ENSO season tracker · 2026–27</p>
-        <h1 className="text-[2.1rem] tracking-[-0.02em] sm:text-[2.75rem]">
+        <p className="eyebrow text-xs">ENSO season tracker · 2026–27</p>
+        <h1 className="text-4xl tracking-tight sm:text-5xl">
           El Niño Winter Watch
         </h1>
-        <p className="max-w-[34em] font-serif text-lg italic text-ink-soft">
+        <p className="font-serif text-lg italic text-ink-soft">
           A live read on the snow season: the ocean signal straight from NOAA, the
           regional split it implies, and which mountains your pass actually reaches.
         </p>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs text-ink-faint">
-          <span className="inline-flex items-center gap-2 rounded-sm bg-accent px-2.5 py-1 font-semibold uppercase tracking-[0.1em] text-white">
+          <span className="inline-flex items-center gap-2 rounded-sm bg-accent px-2.5 py-1 font-semibold uppercase tracking-widest text-white">
             <span className="h-[7px] w-[7px] rounded-full bg-white" />
             {advisory}
           </span>
@@ -94,15 +95,12 @@ export default async function Page() {
       />
 
       <section className="pt-10">
-        <div className="mb-5 flex flex-wrap items-baseline justify-between gap-4 border-b border-rule pb-2.5">
-          <h2 className="font-serif text-2xl">How the score works</h2>
-          <p className="eyebrow">Probabilities, not promises</p>
-        </div>
+      <SectionHeader title="How the score works" meta="Probabilities, not promises" />
 
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-3">
           <div>
             <h3 className="font-serif text-lg">Seasonal signal</h3>
-            <p className="mt-1.5 max-w-[60ch] text-sm text-ink-soft">
+            <p className="mt-1.5 text-sm text-ink-soft">
               Each resort carries a teleconnection coefficient — how its winter
               precipitation responds to El Niño in the historical composites. That is
               scaled by the live event magnitude and by its flavor: eastern-Pacific
@@ -112,7 +110,7 @@ export default async function Page() {
           </div>
           <div>
             <h3 className="font-serif text-lg">Elevation and warmth</h3>
-            <p className="mt-1.5 max-w-[60ch] text-sm text-ink-soft">
+            <p className="mt-1.5 text-sm text-ink-soft">
               El Niño winters run warm, so the snow line — not the storm count — is
               usually the binding constraint. Mountains with high bases absorb warm
               storms; low bases take the same storm as rain. The score penalises low
@@ -121,44 +119,36 @@ export default async function Page() {
           </div>
           <div>
             <h3 className="font-serif text-lg">Live model runs</h3>
-            <p className="mt-1.5 max-w-[60ch] text-sm text-ink-soft">
+            <p className="mt-1.5 text-sm text-ink-soft">
               Once there is snow to forecast, the 16-day NOAA GFS run takes over at a
               65/35 blend with the seasonal signal. In the preseason every grid point
               reads zero, so the app says so rather than ranking on noise.
             </p>
           </div>
-          <div>
-            <h3 className="font-serif text-lg">Pass fit</h3>
-            <p className="mt-1.5 max-w-[60ch] text-sm text-ink-soft">
-              A great forecast you can only reach for five blacked-out days is worth
-              less than a good one you can reach any weekend. Pass fit multiplies the
-              score by how generous your tier actually is at that mountain.
-            </p>
-          </div>
         </div>
 
         <div className="mt-6 border border-rule bg-surface p-4">
-          <p className="eyebrow mb-2 text-[0.65rem]">
+          <p className="eyebrow mb-2 text-micro">
             Ikon Base blackout dates · Northern Hemisphere
           </p>
           <ul className="flex flex-wrap gap-2">
             {BASE_BLACKOUT_DATES.map((b) => (
               <li
                 key={b.range}
-                className="tnum rounded-sm border border-rule-strong px-2.5 py-1 font-mono text-[0.74rem] text-ink-soft"
+                className="tnum rounded-sm border border-rule-strong px-2.5 py-1 font-mono text-meta text-ink-soft"
               >
                 {b.range} <span className="text-ink-faint">· {b.label}</span>
               </li>
             ))}
           </ul>
-          <p className="mt-3 max-w-[62ch] text-sm text-ink-faint">
+          <p className="mt-3 text-sm text-ink-faint">
             Alterra adjusts both the roster and the blackout calendar between
             announcement and season, and secondary sources disagree on the details.
             Verify on ikonpass.com before buying anything.
           </p>
         </div>
 
-        <p className="mt-5 max-w-[65ch] border-l-2 border-hot pl-4 text-sm text-ink-soft">
+        <p className="mt-4 border border-rule border-l-[3px] border-l-hot bg-surface px-4 py-3.5 text-sm text-ink-soft">
           <strong className="font-semibold">This is a model, not a NOAA product.</strong>{' '}
           The ocean state and every forecast number are live NOAA data. The ranking on
           top of them is this app&apos;s own, calibrated to published ENSO composite
@@ -169,7 +159,7 @@ export default async function Page() {
 
       <Sources />
 
-      <footer className="mt-12 flex flex-wrap justify-between gap-x-5 gap-y-1.5 border-t-2 border-ink pt-4 font-mono text-[0.74rem] text-ink-faint">
+      <footer className="mt-12 flex flex-wrap justify-between gap-x-5 gap-y-1.5 border-t-2 border-ink pt-4 font-mono text-meta text-ink-faint">
         <span>El Niño Winter Watch · {RESORTS.length} destinations</span>
         <span>Data: NOAA CPC + NOAA GFS</span>
       </footer>

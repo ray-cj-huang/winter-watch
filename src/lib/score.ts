@@ -18,11 +18,6 @@ export interface ScoredResort {
   ensoEffect: number
   /** 0-1, how well the mountain's elevation absorbs a warm winter. */
   elevationResilience: number
-  /** 0-1, generosity of the selected pass tier at this resort. */
-  accessWeight: number
-  /** score x accessWeight -- "where the forecast and the pass agree". */
-  passFit: number
-  tier: 1 | 2 | 3
   /**
    * Plain-language read on `score`. Deliberately derived from the same value
    * the map colours by, so a red dot is never labelled "Favored".
@@ -92,19 +87,6 @@ export function liveScore(f: ResortForecast | null): number | null {
   return clamp(snow + depth - rainPenalty, 0, 100)
 }
 
-export function accessWeight(a: Access): number {
-  if (a.kind === 'unlimited') return a.blackouts ? 0.92 : 1
-  const d = a.days ?? 0
-  // 7-day partner access is meaningfully better than a 5-day Base allocation.
-  return clamp(0.4 + d * 0.045, 0.4, 0.85)
-}
-
-function tierFor(score: number, passFit: number): 1 | 2 | 3 {
-  if (score >= 68 && passFit >= 45) return 1
-  if (score >= 52) return 2
-  return 3
-}
-
 /**
  * Decide whether there is enough snow in the model to rank on live data.
  *
@@ -143,9 +125,6 @@ export function scoreResorts(
     const score =
       mode === 'live' && live !== null ? live * 0.65 + seasonal * 0.35 : seasonal
 
-    const weight = accessWeight(access)
-    const passFit = score * weight
-
     return [
       {
         resort,
@@ -155,9 +134,6 @@ export function scoreResorts(
         score,
         ensoEffect: effect,
         elevationResilience: elevationResilience(resort),
-        accessWeight: weight,
-        passFit,
-        tier: tierFor(score, passFit),
         verdict: scoreLabel(score),
         access,
       } satisfies ScoredResort,

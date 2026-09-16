@@ -89,6 +89,7 @@ export default function ResortMap({
                 onClick={() => onSelect(selectedId === point.id ? null : point.id)}
                 className="cursor-pointer"
               >
+                <circle r={Math.max(r + 5, 16)} fill="transparent" />
                 {isActive && (
                   <circle r={r + 5} fill="none" stroke="var(--ink)" strokeWidth={1.2} />
                 )}
@@ -108,7 +109,16 @@ export default function ResortMap({
       </svg>
 
       {activeEntry && (
-        <MapCallout entry={activeEntry.scored} point={activeEntry.point} mode={mode} />
+        <>
+          <MapCallout
+            entry={activeEntry.scored}
+            point={activeEntry.point}
+            mode={mode}
+          />
+          <div className="mt-2 border border-rule bg-surface p-3 sm:hidden">
+            <CalloutBody entry={activeEntry.scored} mode={mode} />
+          </div>
+        </>
       )}
     </div>
   )
@@ -131,7 +141,7 @@ function MapCallout({
 
   return (
     <div
-      className="pointer-events-none absolute z-10 w-56 border border-rule bg-surface p-3 shadow-lg"
+      className="pointer-events-none absolute z-10 hidden w-56 border border-rule bg-surface p-3 shadow-lg sm:block"
       style={{
         left: `${left}%`,
         top: `${top}%`,
@@ -140,8 +150,17 @@ function MapCallout({
         })`,
       }}
     >
+      <CalloutBody entry={entry} mode={mode} />
+    </div>
+  )
+}
+
+/** Shared by the floating tooltip and the stacked mobile panel. */
+function CalloutBody({ entry, mode }: { entry: ScoredResort; mode: ScoreMode }) {
+  return (
+    <>
       <p className="font-serif text-base leading-tight">{entry.resort.name}</p>
-      <p className="eyebrow mt-0.5 text-[0.65rem]">{entry.resort.locale}</p>
+      <p className="eyebrow mt-0.5 text-micro">{entry.resort.locale}</p>
       <div className="mt-2 flex items-baseline gap-2">
         <span
           className="tnum font-mono text-2xl font-semibold leading-none"
@@ -156,9 +175,9 @@ function MapCallout({
           {entry.forecast.snowIn7d.toFixed(1)}&quot; next 7d
         </p>
       )}
-      <p className="tnum mt-1 font-mono text-[0.68rem] text-ink-faint">
+      <p className="tnum mt-1 font-mono text-meta text-ink-faint">
         Base {num(entry.resort.baseElevationFt)} ft
       </p>
-    </div>
+    </>
   )
 }
