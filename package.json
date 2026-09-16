@@ -2,11 +2,32 @@
   "name": "winter-watch",
   "version": "0.1.0",
   "private": true,
+  "description": "Live NOAA ENSO and GFS forecast ranking for Ikon pass ski destinations",
+  "license": "MIT",
+  "author": "Ray Huang",
+  "homepage": "https://winter-watch.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ray-cj-huang/winter-watch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ray-cj-huang/winter-watch/issues"
+  },
+  "keywords": [
+    "enso",
+    "el-nino",
+    "noaa",
+    "gfs",
+    "skiing",
+    "ikon-pass",
+    "nextjs"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "d3-geo": "^3.1.1",

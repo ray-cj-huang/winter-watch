@@ -94,3 +94,39 @@ pnpm dev
 
 Deploys to Vercel with no configuration beyond `vercel.ts`. Set `CRON_SECRET` in
 project settings so the refresh endpoint is not publicly callable.
+
+## Built with Claude Code
+
+This project was written largely by [Claude Code](https://claude.com/claude-code),
+with a human directing the work and reviewing every change. That is disclosed
+here because it is fair context for anyone reading the code or trusting the
+output:
+
+- **The data is verified; the judgement is not peer-reviewed.** Every number
+  shown comes from a live NOAA endpoint, and the awkward parts — the fixed-width
+  CPC weekly file especially — were tested against the real feeds rather than
+  invented fixtures. The scoring weights in `src/lib/score.ts` are an editorial
+  reading of published ENSO composite patterns. They are documented so you can
+  disagree with them.
+- **The pass data is a secondary source.** The roster in `src/lib/resorts.ts`
+  was compiled from published Alterra material, not from an official feed. It
+  can be wrong or go stale. Verify on
+  [ikonpass.com](https://www.ikonpass.com/en/ski-resorts) before buying
+  anything.
+- **Nothing here is a forecast.** For an official probabilistic outlook, use the
+  [CPC seasonal outlooks](https://www.cpc.ncep.noaa.gov/products/predictions/long_range/seasonal.php).
+
+[`CLAUDE.md`](CLAUDE.md) holds the conventions and invariants the assistant works
+under. It doubles as an accurate description of the codebase for humans.
+
+## Contributing
+
+Roster corrections, extra passes and scoring arguments are all welcome — see
+[`CONTRIBUTING.md`](CONTRIBUTING.md). CI runs `pnpm lint`, `pnpm typecheck` and
+`pnpm build` on every pull request.
+
+## License
+
+[MIT](LICENSE). NOAA data is in the public domain; resort and pass names belong
+to their respective owners, and this project is not affiliated with or endorsed
+by NOAA, Alterra Mountain Company or any resort.
