@@ -63,7 +63,7 @@ export default async function Page() {
   )
 
   return (
-    <div className="mx-auto max-w-[68rem] px-5 pb-20">
+    <div className="mx-auto max-w-[68rem] px-5 pb-12">
       <header className="flex flex-col gap-3.5 border-b-2 border-ink pb-5 pt-11">
         <p className="eyebrow text-xs">ENSO season tracker · 2026–27</p>
         <h1 className="text-4xl tracking-tight sm:text-5xl">
