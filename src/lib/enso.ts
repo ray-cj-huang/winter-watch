@@ -143,9 +143,10 @@ async function getText(url: string): Promise<string> {
  * @remarks
  * - Cached for an hour and tagged `noaa-enso`.
  * - The scheduled refresh pulls the new week the moment CPC publishes it.
+ * - Remote, not in-memory: this throws on failure, so a stampede is an outage.
  */
 export async function getEnsoState(): Promise<EnsoState> {
-  'use cache'
+  'use cache: remote'
   cacheLife('hours')
   cacheTag('noaa', 'noaa-enso')
 

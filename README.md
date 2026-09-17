@@ -100,8 +100,13 @@ a `PassId` and an `access` entry per resort.
 
 Next.js 16 (App Router, Cache Components), React 19, Tailwind v4, TypeScript, pnpm.
 
-- NOAA fetches are wrapped in `use cache` with `cacheLife('hours')` and tagged
-  `noaa`, so the page prerenders as a static shell and refreshes on a schedule.
+- NOAA fetches are wrapped in `use cache: remote` with `cacheLife('hours')` and
+  tagged `noaa`, so the page prerenders as a static shell and refreshes on a
+  schedule. Remote rather than in-memory because the board streams per request:
+  in-memory, every cold instance would re-fetch, and a spike would hit a
+  rate-limited Open-Meteo and a public NOAA endpoint once per instance. Map
+  geometry stays in-memory — it is local computation with no upstream to
+  protect.
 - `GET /api/refresh` invalidates the `noaa` tag. Vercel Cron calls it daily
   (`vercel.ts`) — Hobby plans reject anything more frequent, and the cached
   fetches self-revalidate hourly anyway, so the cron is a floor rather than the
