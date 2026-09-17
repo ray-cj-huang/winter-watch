@@ -71,9 +71,6 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
 
   const inRegion = useMemo(() => RESORTS.filter((r) => r.macro === macro), [macro])
 
-  // The model picks the honest default per region: in the northern preseason
-  // every US grid point reads zero, so ranking on it would be noise. The user
-  // can still force either mode.
   const autoMode = useMemo(() => pickMode(inRegion, forecasts), [inRegion, forecasts])
   const [modeOverride, setModeOverride] = useState<ScoreMode | null>(null)
   const mode: ScoreMode = modeOverride ?? autoMode

@@ -1,15 +1,17 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { SCORE_BANDS, scoreColor } from '@/lib/palette'
+import { SCORE_BANDS, scoreColor, type ScoreLabel } from '@/lib/palette'
 import type { ScoredResort, ScoreMode } from '@/lib/score'
 import type { Access } from '@/lib/types'
 
 /** Favored end open; the rest of the split collapses to one line each. */
-const DEFAULT_OPEN: ReadonlySet<string> = new Set(['Favored'])
+const DEFAULT_OPEN: ReadonlySet<ScoreLabel> = new Set(['Favored'])
 
 /**
  * Access compressed to a glyph so a row stays on one line.
+ *
+ * @remarks
  * `∞` unlimited, `5d`/`7d` day-capped, `*` holiday blackouts apply.
  */
 function accessGlyph(a: Access): string {
@@ -104,7 +106,7 @@ export default function ResortTable({
   selectedId: string | null
   onSelect: (id: string | null) => void
 }) {
-  const [open, setOpen] = useState<ReadonlySet<string>>(DEFAULT_OPEN)
+  const [open, setOpen] = useState<ReadonlySet<ScoreLabel>>(DEFAULT_OPEN)
 
   // Rank is assigned before bucketing, so numbering stays one continuous
   // ranking across groups rather than restarting in each.
@@ -125,7 +127,7 @@ export default function ResortTable({
     )
   }
 
-  const toggle = (label: string) =>
+  const toggle = (label: ScoreLabel) =>
     setOpen((prev) => {
       const next = new Set(prev)
       if (next.has(label)) next.delete(label)

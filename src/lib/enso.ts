@@ -1,4 +1,5 @@
 import { cacheLife, cacheTag } from 'next/cache'
+import type { Unit } from './types'
 
 /** CPC refreshes the weekly SST file each Monday; ONI updates monthly. */
 export const CPC_WEEKLY_SST_URL = 'https://www.cpc.ncep.noaa.gov/data/indices/wksst9120.for'
@@ -24,15 +25,17 @@ export interface EnsoState extends NinoRegions {
   strength: EnsoStrength
   flavor: EnsoFlavor
   /**
-   * Normalised event magnitude in [0, 1], from the Nino 3.4 anomaly.
-   * 2.0 C (the "very strong" threshold) maps to 1.0.
+   * Normalised event magnitude, from the Nino 3.4 anomaly.
+   *
+   * @remarks
+   * 2.0 C, the "very strong" threshold, maps to 1.0.
    */
-  magnitude: number
+  magnitude: Unit
   /**
-   * East-west gradient in [0, 1]. High = eastern-Pacific flavour, which
-   * historically loads the subtropical jet across the southern US tier.
+   * East-west gradient. High = eastern-Pacific flavour, which historically
+   * loads the subtropical jet across the southern US tier.
    */
-  epGradient: number
+  epGradient: Unit
   /** Most recent Oceanic Nino Index 3-month season, e.g. "JJA 2026". */
   oniSeason: string | null
   oniValue: number | null
@@ -60,10 +63,12 @@ interface WeeklyRow extends NinoRegions {
 }
 
 /**
- * The CPC weekly file is fixed-width and columns collide when an anomaly is
- * negative (`22.4-0.1`), so pull every signed decimal token instead of
- * splitting on whitespace. Column order is Nino1+2, Nino3, Nino3.4, Nino4,
- * each as an (SST, anomaly) pair.
+ * Parse the CPC weekly Nino-region file.
+ *
+ * @remarks
+ * - The file is fixed-width and columns collide on a negative anomaly.
+ * - `22.4-0.1` is two values, so this pulls signed decimals, not whitespace.
+ * - Column order: Nino1+2, Nino3, Nino3.4, Nino4, each an (SST, anomaly) pair.
  */
 export function parseWeeklySst(text: string): WeeklyRow[] {
   const rows: WeeklyRow[] = []
@@ -106,19 +111,22 @@ export function classifyPhase(nino34: number): EnsoPhase {
   return 'Neutral'
 }
 
+const clamp01 = (n: number): Unit => Math.min(1, Math.max(0, n))
+
 /**
- * Eastern-Pacific events warm Nino 1+2 far more than Nino 4. The spread
- * between them is the cleanest single-number proxy for event flavour.
+ * Classify the event's flavour from the east-west warming gradient.
+ *
+ * @remarks
+ * - Eastern-Pacific events warm Nino 1+2 far more than Nino 4.
+ * - That spread is the cleanest single-number proxy for flavour.
  */
-export function classifyFlavor(r: NinoRegions): { flavor: EnsoFlavor; epGradient: number } {
+export function classifyFlavor(r: NinoRegions): { flavor: EnsoFlavor; epGradient: Unit } {
   const spread = r.nino12 - r.nino4
   const epGradient = clamp01(spread / 3)
   if (spread >= 1.5) return { flavor: 'Eastern Pacific', epGradient }
   if (spread <= -0.5) return { flavor: 'Central Pacific', epGradient }
   return { flavor: 'Mixed', epGradient }
 }
-
-const clamp01 = (n: number) => Math.min(1, Math.max(0, n))
 
 async function getText(url: string): Promise<string> {
   const res = await fetch(url, {
@@ -132,8 +140,9 @@ async function getText(url: string): Promise<string> {
 /**
  * Live ENSO state from NOAA CPC.
  *
- * Cached for an hour and tagged `noaa-enso`, so the scheduled refresh in
- * `/api/refresh` can pull the new week the moment CPC publishes it.
+ * @remarks
+ * - Cached for an hour and tagged `noaa-enso`.
+ * - The scheduled refresh pulls the new week the moment CPC publishes it.
  */
 export async function getEnsoState(): Promise<EnsoState> {
   'use cache'

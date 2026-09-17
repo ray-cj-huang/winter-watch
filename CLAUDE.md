@@ -59,18 +59,65 @@ These are load-bearing. Breaking one is a bug even if it typechecks.
 - **The score is a model, not a NOAA product.** Any UI that presents a ranking
   keeps that distinction visible. Do not soften the disclaimers.
 
+## Types carry the constraints
+
+Prose that backfills a bare `number` is a type smell, not documentation. Reach
+for the type system first, and the declaration will read without a comment:
+
+- **A unit, a range or a sign belongs in the type, never in prose.** Units go
+  in the identifier (`baseElevationFt`, `snowIn7d`, `highC`). Unitless
+  normalised values use the aliases in `src/lib/types.ts` — `SignedUnit`
+  ([-1, 1]), `Unit` ([0, 1]), `Score` ([0, 100]) — so the range is written once
+  and shows up in hover at every use site.
+- **A set of known strings is a union, not `string`.** `ScoreLabel` is derived
+  from `SCORE_BANDS`, so renaming a band breaks the build instead of silently
+  emptying a table group.
+- **A field that is only valid for some variants means a discriminated union.**
+  `Access` is split on `kind`, so a day-capped tier cannot exist without its
+  `days` count.
+- Aliases are conventions, not brands. They document and they do not enforce;
+  branding would mean a cast at every literal in `resorts.ts`.
+
 ## Comments
 
 The code should read without them. Follow
 [TSDoc](https://tsdoc.org/) and the
 [Google TypeScript style guide](https://google.github.io/styleguide/tsguide.html#comments-documentation):
 
-- **Doc comments are for callers, line comments are for implementers.** Reach
-  for `/** … */` when someone using the export needs to know something, and for
-  `//` when the note is about how the body works.
+- **One comment, one job.** A constraint goes in the type, the physical
+  mechanism in the README, the provenance of a dataset next to the data, and
+  the weighting next to the code that applies it. A comment covering more than
+  one of those is at the wrong altitude — and usually duplicates something
+  already written elsewhere, which is two places to keep true.
+- **Summary first, `@remarks` after.** In TSDoc everything before the first
+  block tag is the summary, and that is what editors show in the hover tooltip.
+  Keep it to one sentence and put the background in `@remarks`.
+- **`@remarks` past one line becomes bullets.** One proposition per bullet, each
+  finishing on its own line. Wrapped prose in a comment is a wall; a reader
+  skimming for the one fact they need should find it on a line by itself. If a
+  bullet will not fit on a line, it is two bullets or it is too much detail.
+- **No comment blocks at the top of a file.** Prose there is addressed to a
+  reader with no context, and that reader should be in the README. Anything a
+  reader already inside the file needs goes on the declaration it affects, in
+  one line. Nearly every header block in this repo turned out to be the README
+  copied out of date.
+- **If the code enforces it, do not also assert it.** `import 'server-only'`, a
+  discriminated union and a derived union are load-bearing. A comment restating
+  what they already guarantee is a second copy that can drift out of step.
+- **Cross-reference with `@see {@link X}`, never a bare filename.** Editor
+  tooling checks the link; a filename in prose rots silently.
+- **Every module-level declaration gets `/** … */`, exported or not.** Only a
+  doc comment reaches the editor: TypeScript's language service attaches
+  `/** … */` to the declaration and shows it on hover, and drops `//` entirely.
+  Export has nothing to do with it — a private `const` hovered from inside its
+  own file shows its doc comment just the same.
+- **`//` is for notes that are not attached to one declaration.** A step inside
+  a function body, a load-bearing import, or a note covering a group of
+  declarations. A doc comment on a group silently documents only the first one,
+  which is worse than not writing it.
 - **A doc comment documents the declaration directly beneath it.** With a blank
-  line between them it documents nothing — if the note is about the file, make
-  it a `//` comment.
+  line between them it documents nothing — and a note that is really about the
+  whole file belongs in the README, not at the top of the file.
 - **Never restate the type signature.** TypeScript already says what the
   parameters and the return are. Add `@param` / `@returns` only when they carry
   something the types cannot.

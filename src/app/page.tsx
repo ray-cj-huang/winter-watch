@@ -14,8 +14,10 @@ import SectionHeader from '@/components/SectionHeader'
 const MACROS = Object.keys(MACRO_LABELS) as MacroRegionId[]
 
 /**
- * Projected geometry never changes, so it is cached for as long as the
- * platform will hold it and shipped to the client as plain path strings.
+ * Projected geometry for every region, as plain SVG path strings.
+ *
+ * @remarks
+ * It never changes, so it is cached for as long as the platform will hold it.
  */
 async function getMapPayload(): Promise<{
   maps: Record<MacroRegionId, MapGeometry>

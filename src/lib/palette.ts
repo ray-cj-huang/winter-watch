@@ -1,3 +1,5 @@
+import type { Score } from './types'
+
 /**
  * One scale, used by the map, the table and the legend so a colour always
  * means the same thing. Cold = favored, hot = on the dry side of the split.
@@ -8,14 +10,17 @@ export const SCORE_BANDS = [
   { min: -Infinity, label: 'Unfavorable', varName: '--hot' },
 ] as const
 
-export function scoreColor(score: number): string {
-  const band = SCORE_BANDS.find((b) => score >= b.min) ?? SCORE_BANDS[SCORE_BANDS.length - 1]
-  return `var(${band.varName})`
+export type ScoreLabel = (typeof SCORE_BANDS)[number]['label']
+
+const bandFor = (score: Score) =>
+  SCORE_BANDS.find((b) => score >= b.min) ?? SCORE_BANDS[SCORE_BANDS.length - 1]
+
+export function scoreColor(score: Score): string {
+  return `var(${bandFor(score).varName})`
 }
 
-export function scoreLabel(score: number): string {
-  const band = SCORE_BANDS.find((b) => score >= b.min) ?? SCORE_BANDS[SCORE_BANDS.length - 1]
-  return band.label
+export function scoreLabel(score: Score): ScoreLabel {
+  return bandFor(score).label
 }
 
 /** Anomaly colour for the Nino-region bars. */

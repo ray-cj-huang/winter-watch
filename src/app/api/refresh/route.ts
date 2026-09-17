@@ -3,11 +3,11 @@ import type { NextRequest } from 'next/server'
 
 /**
  * Invalidates the `noaa` tag, covering both the CPC ENSO feed and the GFS
- * forecasts. Stale-while-revalidate, so a request landing mid-refresh gets the
- * previous payload rather than blocking.
+ * forecasts.
  *
- * Called by Vercel Cron (see `vercel.ts`), and safe to call by hand when CPC
- * publishes a new week.
+ * @remarks
+ * - Stale-while-revalidate: a request mid-refresh gets the previous payload.
+ * - Called by Vercel Cron, and safe to call by hand when CPC publishes.
  */
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET

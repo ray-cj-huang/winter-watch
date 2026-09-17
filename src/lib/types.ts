@@ -16,15 +16,27 @@ export type RegionId =
 /** Coarse grouping used by the region switcher. US is the default view. */
 export type MacroRegionId = 'us' | 'canada' | 'europe' | 'japan' | 'southern'
 
-export interface Access {
-  /** 'unlimited' = no day cap. 'days' = capped, see `days`. */
-  kind: 'unlimited' | 'days'
-  days?: number
+// Conventions, not brands: they document a range, they do not enforce it.
+
+/** A coefficient in [-1, 1]. Positive is favored, negative disfavored. */
+export type SignedUnit = number
+
+/** A fraction in [0, 1]. */
+export type Unit = number
+
+/** A ranking value in [0, 100]. */
+export type Score = number
+
+interface AccessCommon {
   /** Whether the holiday blackout calendar applies at this tier. */
   blackouts: boolean
   /** Free-text caveat, e.g. Snowbird-only at the Base tier. */
   note?: string
 }
+
+export type Access =
+  | (AccessCommon & { kind: 'unlimited' })
+  | (AccessCommon & { kind: 'days'; days: number })
 
 export interface Resort {
   id: string
@@ -36,20 +48,12 @@ export interface Resort {
   macro: MacroRegionId
   lat: number
   lon: number
-  /** Feet. */
   baseElevationFt: number
   summitElevationFt: number
-  /** Average annual snowfall in inches, used as the climatological baseline. */
+  /** The climatological baseline a season is measured against. */
   avgAnnualSnowIn: number
-  /**
-   * El Nino teleconnection coefficient in [-1, 1].
-   *
-   * Positive = favored in El Nino winters (subtropical jet loads the southern
-   * tier); negative = on the dry side of the split (polar jet retreats north).
-   * Derived from published ENSO composite anomaly patterns for DJF
-   * precipitation. `score.ts` documents how the coefficient is applied.
-   */
-  ensoSensitivity: number
+  /** Response of this resort's winter precipitation to past El Niños. */
+  ensoSensitivity: SignedUnit
   /** Access by pass tier. A resort absent from `ikon-base` is full-Ikon only. */
   access: Partial<Record<PassId, Access>>
   website: string

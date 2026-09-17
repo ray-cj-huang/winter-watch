@@ -1,3 +1,4 @@
+// Keeps d3-geo and the topojson atlases out of the client bundle.
 import 'server-only'
 import {
   geoAlbersUsa,
@@ -20,11 +21,6 @@ import { MACRO_LABELS, VIEW_BOX, type MapGeometry, type ProjectedPoint } from '.
 export { VIEW_BOX }
 export type { MapGeometry, ProjectedPoint }
 
-// Geometry is projected here and shipped to the client as plain SVG path
-// strings, so d3-geo and the topojson atlases never enter the client bundle.
-// World views are clipped to the region's bounding box first -- otherwise a
-// 50m atlas serialises every country on earth into the payload.
-
 const PADDING = 12
 
 type BBox = [west: number, south: number, east: number, north: number]
@@ -37,9 +33,11 @@ interface ViewSpec {
   source: 'us' | 'world'
   resolution?: '50m' | '110m'
   /**
-   * How to frame the projection. Default is the bbox. A bbox that spans the
-   * full 360 degrees is degenerate as a spherical ring -- its east and west
-   * edges coincide -- so whole-globe views must fit to the sphere instead.
+   * How to frame the projection. Defaults to the bbox.
+   *
+   * @remarks
+   * - A bbox spanning 360 degrees is degenerate as a spherical ring.
+   * - Its east and west edges coincide, so whole-globe views fit the sphere.
    */
   fit?: 'bbox' | 'sphere'
 }
@@ -86,10 +84,10 @@ export const MAP_VIEWS: Record<MacroRegionId, ViewSpec> = {
 /**
  * Bounding box as a GeoJSON polygon, wound CLOCKWISE.
  *
- * Winding is not cosmetic here. d3-geo uses spherical polygon semantics, so a
- * counter-clockwise ring describes the whole globe *minus* the box. Feeding
- * that to fitExtent asks a conic projection to fit the entire sphere, which
- * collapses the scale to ~0 and renders an empty map.
+ * @remarks
+ * - Winding is not cosmetic: d3-geo uses spherical polygon semantics.
+ * - A counter-clockwise ring describes the whole globe *minus* the box.
+ * - Fitting that collapses a conic projection to ~0 and renders an empty map.
  */
 function bboxPolygon([w, s, e, n]: BBox) {
   return {

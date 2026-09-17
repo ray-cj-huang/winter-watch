@@ -2,12 +2,7 @@ import { cacheLife, cacheTag } from 'next/cache'
 import { RESORTS } from './resorts'
 import type { Resort } from './types'
 
-/**
- * Point forecasts come from NOAA's Global Forecast System (GFS), served by
- * Open-Meteo. Open-Meteo is a delivery layer only -- the numbers are NOAA GFS,
- * which is why the same model backs both the US and the international views.
- * GFS runs 4x daily (00/06/12/18Z).
- */
+/** Open-Meteo is a delivery layer; the numbers are NOAA GFS. */
 const GFS_ENDPOINT = 'https://api.open-meteo.com/v1/gfs'
 
 /** Points per request. 58 resorts -> 3 round trips, well under URL limits. */
@@ -109,8 +104,9 @@ function toForecast(resort: Resort, p: OpenMeteoPoint): ResortForecast {
 /**
  * 16-day GFS forecast for every resort in the dataset.
  *
- * Cached against the GFS run cadence and tagged `noaa-forecast` so the
- * scheduled refresh can invalidate it as new model runs land.
+ * @remarks
+ * - Cached against the GFS run cadence and tagged `noaa-forecast`.
+ * - The scheduled refresh invalidates it as new model runs land.
  */
 export async function getForecasts(): Promise<Record<string, ResortForecast>> {
   'use cache'

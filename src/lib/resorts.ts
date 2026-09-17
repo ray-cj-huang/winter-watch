@@ -1,10 +1,5 @@
 import type { Access, PassId, Resort } from './types'
 
-// 2026-27 Ikon roster, and the single place to correct access data -- nothing
-// else hardcodes one. Alterra adjusts both the roster and the blackout
-// calendar between announcement and season, and secondary sources disagree on
-// the details, so treat ikonpass.com as authoritative.
-
 const unlimited = (note?: string): Access => ({ kind: 'unlimited', blackouts: false, note })
 /** Unlimited access that still honours the holiday blackout calendar. */
 const unlimitedBlackout = (note?: string): Access => ({ kind: 'unlimited', blackouts: true, note })
