@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import type { EnsoState } from '@/lib/enso'
 import { num } from '@/lib/format'
@@ -9,23 +10,27 @@ import { MACRO_LABELS } from '@/lib/map-types'
 import { RESORTS } from '@/lib/resorts'
 import { pickMode, scoreResorts, type ScoreMode } from '@/lib/score'
 import type { MacroRegionId, PassId } from '@/lib/types'
+import { boardVerdict } from '@/lib/verdict'
+import {
+  MACRO_IDS,
+  PASS_BLURBS,
+  PASS_IDS,
+  PASS_LABELS,
+  viewStatePath,
+  type ViewState,
+} from '@/lib/view-state'
+import ForecastStrip from './ForecastStrip'
 import ResortMap from './ResortMap'
 import ResortTable from './ResortTable'
-import ForecastStrip from './ForecastStrip'
 import SectionHeader from './SectionHeader'
-
-const PASSES: { id: PassId; label: string; blurb: string }[] = [
-  { id: 'ikon-base', label: 'Ikon Base', blurb: 'Base tier · 5 days at most destinations' },
-  { id: 'ikon', label: 'Ikon', blurb: 'Full pass · 7 days at partners, unlimited at core' },
-]
-
-const MACRO_ORDER: MacroRegionId[] = ['us', 'canada', 'europe', 'japan', 'southern']
+import ShareLink from './ShareLink'
 
 interface Props {
   enso: EnsoState
   forecasts: Record<string, ResortForecast>
   maps: Record<MacroRegionId, MapGeometry>
   points: Record<MacroRegionId, ProjectedPoint[]>
+  initialView: ViewState
 }
 
 function Segmented<T extends string>({
@@ -64,15 +69,31 @@ function Segmented<T extends string>({
   )
 }
 
-export default function Dashboard({ enso, forecasts, maps, points }: Props) {
-  const [pass, setPass] = useState<PassId>('ikon-base')
-  const [macro, setMacro] = useState<MacroRegionId>('us')
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+export default function Dashboard({ enso, forecasts, maps, points, initialView }: Props) {
+  const [pass, setPass] = useState<PassId>(initialView.pass)
+  const [macro, setMacro] = useState<MacroRegionId>(initialView.macro)
+  const [modeOverride, setModeOverride] = useState<ScoreMode | null>(initialView.mode)
+  const [selectedId, setSelectedId] = useState<string | null>(initialView.selectedId)
+
+  /**
+   * Move the board and the address bar together.
+   *
+   * @remarks
+   * - `replaceState` avoids a server round trip on every segmented-button click.
+   * - It also keeps Back meaning the previous page, not the previous filter.
+   */
+  function update(patch: Partial<ViewState>) {
+    const next: ViewState = { pass, macro, mode: modeOverride, selectedId, ...patch }
+    setPass(next.pass)
+    setMacro(next.macro)
+    setModeOverride(next.mode)
+    setSelectedId(next.selectedId)
+    window.history.replaceState(null, '', viewStatePath(next))
+  }
 
   const inRegion = useMemo(() => RESORTS.filter((r) => r.macro === macro), [macro])
 
   const autoMode = useMemo(() => pickMode(inRegion, forecasts), [inRegion, forecasts])
-  const [modeOverride, setModeOverride] = useState<ScoreMode | null>(null)
   const mode: ScoreMode = modeOverride ?? autoMode
 
   const scored = useMemo(
@@ -85,41 +106,38 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
   // Count per region for the switcher, so empty tiers are obvious up front.
   const regionCounts = useMemo(() => {
     const counts = {} as Record<MacroRegionId, number>
-    for (const m of MACRO_ORDER) {
+    for (const m of MACRO_IDS) {
       counts[m] = RESORTS.filter((r) => r.macro === m && r.access[pass]).length
     }
     return counts
   }, [pass])
 
-  const passInfo = PASSES.find((p) => p.id === pass)!
+  const cardUrl = `/api/og?card=board&pass=${pass}&macro=${macro}&mode=${mode}`
 
   return (
     <section className="pt-10">
       <SectionHeader title="Your pass, mapped to the signal" meta={<>{scored.length} destination{scored.length === 1 ? '' : 's'}</>} />
 
+      <p className="mb-5 font-serif text-xl italic text-ink-soft">
+        {boardVerdict(scored[0], pass, mode)}
+      </p>
+
       <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
         <Segmented
           label="Pass"
           value={pass}
-          options={PASSES.map((p) => ({ id: p.id, label: p.label }))}
-          onChange={(p) => {
-            setPass(p)
-            setSelectedId(null)
-          }}
+          options={PASS_IDS.map((p) => ({ id: p, label: PASS_LABELS[p] }))}
+          onChange={(p) => update({ pass: p, selectedId: null })}
         />
         <Segmented
           label="Region"
           value={macro}
-          options={MACRO_ORDER.map((m) => ({
+          options={MACRO_IDS.map((m) => ({
             id: m,
             label: MACRO_LABELS[m],
             disabled: regionCounts[m] === 0,
           }))}
-          onChange={(m) => {
-            setMacro(m)
-            setSelectedId(null)
-            setModeOverride(null)
-          }}
+          onChange={(m) => update({ macro: m, selectedId: null, mode: null })}
         />
         <Segmented
           label="Rank by"
@@ -128,12 +146,13 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
             { id: 'seasonal' as ScoreMode, label: 'Seasonal' },
             { id: 'live' as ScoreMode, label: 'Live GFS' },
           ]}
-          onChange={(m) => setModeOverride(m)}
+          onChange={(m) => update({ mode: m })}
         />
+        <ShareLink label="Share" cardUrl={cardUrl} />
       </div>
 
       <p className="mt-3 text-sm text-ink-soft">
-        {passInfo.blurb}.{' '}
+        {PASS_BLURBS[pass]}.{' '}
         {mode === 'seasonal' ? (
           <>
             Ranking on the <strong className="font-semibold">seasonal</strong> ENSO
@@ -156,26 +175,33 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
             <ResortMap
               geometry={maps[macro]}
               points={points[macro]}
-                scored={scored}
-                mode={mode}
+              scored={scored}
+              mode={mode}
               selectedId={selectedId}
-              onSelect={setSelectedId}
+              onSelect={(id) => update({ selectedId: id })}
             />
           </div>
-
 
           {selected && (
             <div className="mt-4 border border-rule bg-surface p-4">
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <h3 className="font-serif text-xl">{selected.resort.name}</h3>
-                <a
-                  href={selected.resort.website}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-mono text-meta uppercase tracking-wide text-accent underline underline-offset-4"
-                >
-                  Resort site ↗
-                </a>
+                <p className="flex flex-wrap gap-x-4 font-mono text-meta uppercase tracking-wide">
+                  <Link
+                    href={`/resort/${selected.resort.id}`}
+                    className="text-accent underline underline-offset-4"
+                  >
+                    Full page →
+                  </Link>
+                  <a
+                    href={selected.resort.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-accent underline underline-offset-4"
+                  >
+                    Resort site ↗
+                  </a>
+                </p>
               </div>
 
               <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
@@ -234,7 +260,7 @@ export default function Dashboard({ enso, forecasts, maps, points }: Props) {
             scored={scored}
             mode={mode}
             selectedId={selectedId}
-            onSelect={setSelectedId}
+            onSelect={(id) => update({ selectedId: id })}
           />
         </div>
       </div>

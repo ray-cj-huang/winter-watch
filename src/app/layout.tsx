@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
+import { SITE_DEK, SITE_NAME, SITE_URL } from '@/lib/site'
 import './globals.css'
 
 const newsreader = Newsreader({
@@ -22,9 +24,44 @@ const plexMono = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'El Niño Winter Watch',
-  description:
-    'Live NOAA data on this winter\u2019s El Niño, and which resorts on your Ikon pass are best placed for it.',
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_NAME, template: `%s — ${SITE_NAME}` },
+  description: SITE_DEK,
+  applicationName: SITE_NAME,
+  authors: [{ name: 'Ray Huang' }],
+  creator: 'Ray Huang',
+  keywords: [
+    'ENSO',
+    'El Niño',
+    'NOAA',
+    'GFS',
+    'snow forecast',
+    'seasonal outlook',
+    'skiing',
+    'Ikon Pass',
+  ],
+  openGraph: {
+    type: 'website',
+    siteName: SITE_NAME,
+    locale: 'en_US',
+    url: '/',
+    title: SITE_NAME,
+    description: SITE_DEK,
+    images: [
+      {
+        url: '/api/og?card=board',
+        width: 1200,
+        height: 630,
+        alt: 'Ikon pass destinations ranked against the current ENSO state',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_NAME,
+    description: SITE_DEK,
+    images: ['/api/og?card=board'],
+  },
 }
 
 export default function RootLayout({
@@ -36,6 +73,7 @@ export default function RootLayout({
         className={`${newsreader.variable} ${plexSans.variable} ${plexMono.variable} antialiased`}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   )

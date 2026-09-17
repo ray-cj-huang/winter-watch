@@ -1,48 +1,20 @@
-import { cacheLife, cacheTag } from 'next/cache'
+import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import Dashboard from '@/components/Dashboard'
 import EnsoPanel from '@/components/EnsoPanel'
+import JsonLd from '@/components/JsonLd'
+import SectionHeader from '@/components/SectionHeader'
 import Sources from '@/components/Sources'
 import { getEnsoState } from '@/lib/enso'
 import { nino } from '@/lib/format'
 import { getForecasts } from '@/lib/forecast'
-import { buildMap, projectPoints } from '@/lib/geo'
-import { MACRO_LABELS, type MapGeometry, type ProjectedPoint } from '@/lib/map-types'
+import { getMapPayload } from '@/lib/map-payload'
+import { MACRO_LABELS } from '@/lib/map-types'
 import { BASE_BLACKOUT_DATES, RESORTS } from '@/lib/resorts'
-import type { MacroRegionId } from '@/lib/types'
-import SectionHeader from '@/components/SectionHeader'
-
-const MACROS = Object.keys(MACRO_LABELS) as MacroRegionId[]
-
-/**
- * Projected geometry for every region, as plain SVG path strings.
- *
- * @remarks
- * It never changes, so it is cached for as long as the platform will hold it.
- */
-async function getMapPayload(): Promise<{
-  maps: Record<MacroRegionId, MapGeometry>
-  points: Record<MacroRegionId, ProjectedPoint[]>
-}> {
-  'use cache'
-  cacheLife('max')
-  cacheTag('map-geometry')
-
-  const maps = {} as Record<MacroRegionId, MapGeometry>
-  const points = {} as Record<MacroRegionId, ProjectedPoint[]>
-
-  for (const macro of MACROS) {
-    maps[macro] = buildMap(macro)
-    points[macro] = projectPoints(
-      macro,
-      RESORTS.filter((r) => r.macro === macro).map((r) => ({
-        id: r.id,
-        lat: r.lat,
-        lon: r.lon,
-      })),
-    )
-  }
-  return { maps, points }
-}
+import { pickMode, scoreResorts } from '@/lib/score'
+import { SITE_DEK, SITE_NAME, SITE_URL, absolute } from '@/lib/site'
+import { boardVerdict } from '@/lib/verdict'
+import { PASS_LABELS, parseViewState, viewStatePath, type RawParams } from '@/lib/view-state'
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -53,48 +25,145 @@ function fmtDate(iso: string) {
   })
 }
 
-export default async function Page() {
-  const [enso, forecasts, mapPayload] = await Promise.all([
-    getEnsoState(),
-    getForecasts(),
-    getMapPayload(),
-  ])
+const isOceanView = (params: RawParams) =>
+  (Array.isArray(params.view) ? params.view[0] : params.view) === 'ocean'
 
+function cardUrl(params: RawParams): string {
+  if (isOceanView(params)) return absolute('/api/og?card=ocean')
+  const view = parseViewState(params)
+  const q = new URLSearchParams({ card: 'board', pass: view.pass, macro: view.macro })
+  if (view.mode) q.set('mode', view.mode)
+  return absolute(`/api/og?${q}`)
+}
+
+/**
+ * The share text is the board's own verdict sentence.
+ *
+ * @remarks
+ * - An unfurl gets one line, so it should say what the board currently says.
+ * - The NOAA reads behind it are cached, so this costs a render, not a fetch.
+ */
+export async function generateMetadata({ searchParams }: PageProps<'/'>): Promise<Metadata> {
+  const params = await searchParams
+  const view = parseViewState(params)
+  const isDefault = viewStatePath(view) === '/' && !isOceanView(params)
+
+  let description = SITE_DEK
+  let title = `${PASS_LABELS[view.pass]} · ${MACRO_LABELS[view.macro]}`
+
+  if (isOceanView(params)) {
+    const enso = await getEnsoState()
+    title = 'Ocean state'
+    description = nino(
+      `Niño 3.4 is ${enso.nino34 > 0 ? '+' : ''}${enso.nino34.toFixed(1)}°C, a ${enso.strength.toLowerCase()} ${enso.phase} with a ${enso.flavor.toLowerCase()} flavour.`,
+    )
+  } else if (!isDefault) {
+    const [enso, forecasts] = await Promise.all([getEnsoState(), getForecasts()])
+    const inRegion = RESORTS.filter((r) => r.macro === view.macro)
+    const mode = view.mode ?? pickMode(inRegion, forecasts)
+    const scored = scoreResorts(inRegion, view.pass, enso, forecasts, mode)
+    description = boardVerdict(scored[0], view.pass, mode)
+  }
+
+  const card = cardUrl(params)
+  const shared = isDefault ? SITE_NAME : title
+
+  return {
+    title: isDefault ? { absolute: SITE_NAME } : title,
+    description,
+    alternates: { canonical: '/' },
+    openGraph: { title: shared, description, url: '/', images: [card] },
+    twitter: { title: shared, description, images: [card] },
+  }
+}
+
+async function Masthead() {
+  const enso = await getEnsoState()
   const advisory = nino(
     enso.phase === 'Neutral' ? 'ENSO Neutral' : `${enso.strength} ${enso.phase}`,
   )
 
   return (
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs text-ink-faint">
+      <span className="inline-flex items-center gap-2 rounded-sm bg-accent px-2.5 py-1 font-semibold uppercase tracking-widest text-white">
+        <span className="h-[7px] w-[7px] rounded-full bg-white" />
+        {advisory}
+      </span>
+      <span>CPC week of {fmtDate(enso.weekEnding)}</span>
+      <span>Updated {fmtDate(enso.fetchedAt)}</span>
+    </div>
+  )
+}
+
+async function OceanState() {
+  const enso = await getEnsoState()
+  return <EnsoPanel enso={enso} />
+}
+
+async function Board({ searchParams }: Pick<PageProps<'/'>, 'searchParams'>) {
+  const [params, enso, forecasts, mapPayload] = await Promise.all([
+    searchParams,
+    getEnsoState(),
+    getForecasts(),
+    getMapPayload(),
+  ])
+  const view = parseViewState(params)
+
+  return (
+    <Dashboard
+      enso={enso}
+      forecasts={forecasts}
+      maps={mapPayload.maps}
+      points={mapPayload.points}
+      initialView={view}
+    />
+  )
+}
+
+function BoardFallback() {
+  return (
+    <section className="pt-10">
+      <SectionHeader title="Your pass, mapped to the signal" meta="Loading" />
+      <div className="h-[28rem] animate-pulse border border-rule bg-surface" />
+    </section>
+  )
+}
+
+export default function Page({ searchParams }: PageProps<'/'>) {
+  return (
     <div className="mx-auto max-w-[68rem] px-5 pb-12">
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Dataset',
+          name: SITE_NAME,
+          description: SITE_DEK,
+          url: SITE_URL,
+          license: 'https://opensource.org/licenses/MIT',
+          isAccessibleForFree: true,
+          creator: { '@type': 'Person', name: 'Ray Huang' },
+          keywords: ['ENSO', 'El Niño', 'NOAA', 'GFS', 'snow forecast', 'Ikon Pass'],
+          variableMeasured: ['Niño 3.4 anomaly', 'Oceanic Niño Index', '16-day GFS snowfall'],
+        }}
+      />
+
       <header className="flex flex-col gap-3.5 border-b-2 border-ink pb-5 pt-11">
         <p className="eyebrow text-xs">ENSO season tracker · 2026–27</p>
-        <h1 className="text-4xl tracking-tight sm:text-5xl">
-          El Niño Winter Watch
-        </h1>
+        <h1 className="text-4xl tracking-tight sm:text-5xl">El Niño Winter Watch</h1>
         <p className="font-serif text-lg italic text-ink-soft">
           Live NOAA data on this winter&apos;s El Niño, and which resorts on your
           pass are best placed for it.
         </p>
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-xs text-ink-faint">
-          <span className="inline-flex items-center gap-2 rounded-sm bg-accent px-2.5 py-1 font-semibold uppercase tracking-widest text-white">
-            <span className="h-[7px] w-[7px] rounded-full bg-white" />
-            {advisory}
-          </span>
-          <span>CPC week of {fmtDate(enso.weekEnding)}</span>
-          <span>Updated {fmtDate(enso.fetchedAt)}</span>
-        </div>
+        <Masthead />
       </header>
 
-      <div className="pt-10">
-        <EnsoPanel enso={enso} />
+      <div className="pt-10" id="ocean">
+        <OceanState />
       </div>
 
-      <Dashboard
-        enso={enso}
-        forecasts={forecasts}
-        maps={mapPayload.maps}
-        points={mapPayload.points}
-      />
+      <Suspense fallback={<BoardFallback />}>
+        <Board searchParams={searchParams} />
+      </Suspense>
 
       <section className="pt-10">
       <SectionHeader title="How the score works" meta="Probabilities, not promises" />

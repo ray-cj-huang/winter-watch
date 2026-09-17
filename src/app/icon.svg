@@ -1,3 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <text x="16" y="17" font-size="27" text-anchor="middle" dominant-baseline="central">🏔️</text>
+  <rect width="32" height="32" fill="#e9eef0"/>
+  <path d="M1 27 L10 10 L15 18 L20 12 L31 27 Z" fill="#1d4e89"/>
+  <circle cx="25" cy="7" r="4.5" fill="#c03d26"/>
 </svg>

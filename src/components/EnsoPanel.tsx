@@ -17,7 +17,9 @@ const FLAVOR_CONSEQUENCE: Record<EnsoState['flavor'], string> = {
   Mixed:
     'The pattern sits between the two usual flavours, so expect a weaker regional signal than the numbers alone imply.',
 }
+import Nino34Trend from './Nino34Trend'
 import SectionHeader from './SectionHeader'
+import ShareLink from './ShareLink'
 
 function Vital({
   label,
@@ -140,6 +142,8 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
         </div>
       </div>
 
+      <Nino34Trend history={enso.nino34History} />
+
       <p className="mt-4 text-sm text-ink-faint">
         Each bar is one Niño region&apos;s sea surface temperature against its
         1991–2020 average. The warmest water sits{' '}
@@ -149,6 +153,10 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
         , which makes this {enso.flavor === 'Eastern Pacific' ? 'an' : 'a'}{' '}
         {FLAVOR_INLINE[enso.flavor]} event. {FLAVOR_CONSEQUENCE[enso.flavor]}
       </p>
+
+      <div className="mt-4">
+        <ShareLink cardUrl="/api/og?card=ocean" href="/?view=ocean#ocean" />
+      </div>
     </section>
   )
 }

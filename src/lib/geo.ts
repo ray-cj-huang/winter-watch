@@ -117,7 +117,9 @@ function projectionFor(view: ViewSpec): GeoProjection {
 
 export function buildMap(macro: MacroRegionId): MapGeometry {
   const view = MAP_VIEWS[macro]
-  const path = geoPath(projectionFor(view))
+  // One decimal is sub-pixel in an 820x500 viewBox, and the path strings are
+  // inlined into the HTML, so the extra precision is pure payload.
+  const path = geoPath(projectionFor(view)).digits(1)
 
   if (view.source === 'us') {
     const topo = statesTopo as unknown as Topology<{

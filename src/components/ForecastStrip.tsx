@@ -48,6 +48,7 @@ export default function ForecastStrip({ forecast }: { forecast: ResortForecast }
 
       <p className="mt-1.5 font-mono text-micro text-ink-faint">
         Grid elevation {num(Math.round(forecast.modelElevationM))} m
+        {forecast.powderDays > 0 && ` · ${forecast.powderDays} powder day(s)`}
         {forecast.rainRiskDays > 0 && ` · ${forecast.rainRiskDays} day(s) warm enough for rain`}
       </p>
     </div>

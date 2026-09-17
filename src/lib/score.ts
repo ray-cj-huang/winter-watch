@@ -1,6 +1,7 @@
 import type { EnsoState } from './enso'
 import type { ResortForecast } from './forecast'
 import { scoreLabel, type ScoreLabel } from './palette'
+import { RESORTS } from './resorts'
 import type { Access, PassId, Resort, Score, SignedUnit, Unit } from './types'
 
 export type ScoreMode = 'seasonal' | 'live'
@@ -157,4 +158,30 @@ export function scoreResorts(
   })
 
   return scored.sort((a, b) => b.score - a.score)
+}
+
+/**
+ * A resort's place on the board its own page mirrors.
+ *
+ * @remarks
+ * - Scoped to the macro region for the same reason `pickMode` is.
+ * - Returns null when the tier does not reach the resort at all.
+ */
+export function rankInRegion(
+  resort: Resort,
+  pass: PassId,
+  enso: EnsoState,
+  forecasts: Record<string, ResortForecast>,
+): {
+  entry: ScoredResort
+  board: ScoredResort[]
+  rank: number
+  mode: ScoreMode
+} | null {
+  const region = RESORTS.filter((r) => r.macro === resort.macro)
+  const mode = pickMode(region, forecasts)
+  const board = scoreResorts(region, pass, enso, forecasts, mode)
+  const index = board.findIndex((s) => s.resort.id === resort.id)
+  if (index === -1) return null
+  return { entry: board[index], board, rank: index + 1, mode }
 }

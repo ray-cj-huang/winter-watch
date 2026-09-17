@@ -14,7 +14,8 @@ interface Props {
   scored: ScoredResort[]
   mode: ScoreMode
   selectedId: string | null
-  onSelect: (id: string | null) => void
+  /** Omitted where the map is a locator rather than a control. */
+  onSelect?: (id: string | null) => void
 }
 
 /** Dot radius grows with score so favored mountains read first. */
@@ -86,8 +87,8 @@ export default function ResortMap({
                 transform={`translate(${point.x} ${point.y})`}
                 onMouseEnter={() => setHovered(point.id)}
                 onMouseLeave={() => setHovered(null)}
-                onClick={() => onSelect(selectedId === point.id ? null : point.id)}
-                className="cursor-pointer"
+                onClick={() => onSelect?.(selectedId === point.id ? null : point.id)}
+                className={onSelect ? 'cursor-pointer' : undefined}
               >
                 <circle r={Math.max(r + 5, 16)} fill="transparent" />
                 {isActive && (
