@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { SITE_DEK, SITE_NAME, SITE_URL } from '@/lib/site'
+import { SITE_DEK, SITE_NAME, SITE_URL, ogImage } from '@/lib/site'
 import './globals.css'
 
 const newsreader = Newsreader({
@@ -22,6 +22,11 @@ const plexMono = IBM_Plex_Mono({
   variable: '--font-plex-mono',
   weight: ['400', '500', '600'],
 })
+
+const BOARD_CARD = ogImage(
+  '/api/og?card=board',
+  'Ikon pass destinations ranked against the current ENSO state',
+)
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -47,20 +52,13 @@ export const metadata: Metadata = {
     url: '/',
     title: SITE_NAME,
     description: SITE_DEK,
-    images: [
-      {
-        url: '/api/og?card=board',
-        width: 1200,
-        height: 630,
-        alt: 'Ikon pass destinations ranked against the current ENSO state',
-      },
-    ],
+    images: [BOARD_CARD],
   },
   twitter: {
     card: 'summary_large_image',
     title: SITE_NAME,
     description: SITE_DEK,
-    images: ['/api/og?card=board'],
+    images: [BOARD_CARD],
   },
 }
 

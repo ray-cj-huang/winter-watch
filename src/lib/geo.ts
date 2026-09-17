@@ -117,8 +117,7 @@ function projectionFor(view: ViewSpec): GeoProjection {
 
 export function buildMap(macro: MacroRegionId): MapGeometry {
   const view = MAP_VIEWS[macro]
-  // One decimal is sub-pixel in an 820x500 viewBox, and the path strings are
-  // inlined into the HTML, so the extra precision is pure payload.
+  // Sub-pixel at this viewBox, and these strings are inlined into the HTML.
   const path = geoPath(projectionFor(view)).digits(1)
 
   if (view.source === 'us') {

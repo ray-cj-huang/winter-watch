@@ -79,8 +79,8 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
    * Move the board and the address bar together.
    *
    * @remarks
-   * - `replaceState` avoids a server round trip on every segmented-button click.
-   * - It also keeps Back meaning the previous page, not the previous filter.
+   * - `replaceState` avoids a server round trip on every control click.
+   * - It keeps Back meaning the previous page, not the previous filter.
    */
   function update(patch: Partial<ViewState>) {
     const next: ViewState = { pass, macro, mode: modeOverride, selectedId, ...patch }

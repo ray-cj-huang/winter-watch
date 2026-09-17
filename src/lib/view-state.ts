@@ -48,7 +48,7 @@ export function parseViewState(params: RawParams): ViewState {
   }
 }
 
-/** Path for a view. Defaults are omitted so an untouched board stays `/`. */
+/** Defaults are omitted so an untouched board stays `/`. */
 export function viewStatePath(v: ViewState): string {
   const q = new URLSearchParams()
   if (v.pass !== DEFAULT_PASS) q.set('pass', v.pass)

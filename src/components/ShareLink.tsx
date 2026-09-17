@@ -9,8 +9,8 @@ const BUTTON =
  * Copy the current view, or download its card.
  *
  * @remarks
- * - The address bar tracks the controls, so the copied link is what is on screen.
- * - The card download exists because not every place people paste links unfurls.
+ * - The address bar tracks the controls, so a copy is what is on screen.
+ * - The download exists because not everywhere people paste links unfurls.
  */
 export default function ShareLink({
   cardUrl,

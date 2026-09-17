@@ -107,7 +107,7 @@ function toForecast(resort: Resort, p: OpenMeteoPoint): ResortForecast {
  * @remarks
  * - Cached against the GFS run cadence and tagged `noaa-forecast`.
  * - The scheduled refresh invalidates it as new model runs land.
- * - Remote, so a traffic spike costs Open-Meteo one fetch, not one per instance.
+ * - Remote, so a spike costs Open-Meteo one fetch, not one per instance.
  */
 export async function getForecasts(): Promise<Record<string, ResortForecast>> {
   'use cache: remote'
@@ -123,8 +123,7 @@ export async function getForecasts(): Promise<Record<string, ResortForecast>> {
           points[i] ? toForecast(resort, points[i]) : null,
         )
       } catch {
-        // A failed chunk degrades to "no forecast" for those resorts rather
-        // than taking down the whole page; the seasonal signal still renders.
+        // A failed chunk degrades to "no forecast" rather than a dead page.
         return group.map(() => null)
       }
     }),

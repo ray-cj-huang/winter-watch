@@ -8,7 +8,7 @@ const DAY = new Intl.DateTimeFormat('en-US', { day: 'numeric', timeZone: 'UTC' }
  * The trailing weeks of Niño 3.4, drawn from a zero baseline.
  *
  * @remarks
- * - Direction is the point: one week says nothing about where an event is going.
+ * - Direction is the point: one week says nothing about where this is going.
  * - Columns, not a line, so it shares the diverging scale with the bars above.
  */
 export default function Nino34Trend({

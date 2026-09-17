@@ -6,8 +6,7 @@ import { SITE_URL } from '@/lib/site'
  * The board's query strings are deliberately absent.
  *
  * @remarks
- * - Search engines fold `?pass=…` back into `/`, so listing them adds nothing.
- * - The query string stays a sharing mechanism; the resort pages carry the SEO.
+ * Search engines fold `?pass=…` back into `/`, so listing them adds nothing.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

@@ -15,7 +15,7 @@ import { MACRO_LABELS } from '@/lib/map-types'
 import { scoreColor } from '@/lib/palette'
 import { BASE_BLACKOUT_DATES, RESORTS, RESORTS_BY_ID } from '@/lib/resorts'
 import { rankInRegion } from '@/lib/score'
-import { absolute } from '@/lib/site'
+import { absolute, ogImage } from '@/lib/site'
 import type { Access, PassId, Resort } from '@/lib/types'
 import { boardVerdict, resortRationale } from '@/lib/verdict'
 import { PASS_IDS, PASS_LABELS, viewStatePath } from '@/lib/view-state'
@@ -38,7 +38,7 @@ export async function generateMetadata({
     .map((p) => PASS_LABELS[p])
     .join(' and ')
   const description = `${resort.name}, ${resort.locale}: ${num(resort.baseElevationFt)} ft base, ${num(resort.summitElevationFt)} ft summit, ${resort.avgAnnualSnowIn}" of snow in an average year. On ${tiers}. Ranked live against the NOAA ENSO signal and the 16-day GFS run.`
-  const card = absolute(`/api/og?card=resort&id=${resort.id}`)
+  const card = ogImage(`/api/og?card=resort&id=${resort.id}`, `${resort.name} — current standing`)
 
   return {
     title: resort.name,

@@ -12,7 +12,7 @@ import { getMapPayload } from '@/lib/map-payload'
 import { MACRO_LABELS } from '@/lib/map-types'
 import { BASE_BLACKOUT_DATES, RESORTS } from '@/lib/resorts'
 import { pickMode, scoreResorts } from '@/lib/score'
-import { SITE_DEK, SITE_NAME, SITE_URL, absolute } from '@/lib/site'
+import { SITE_DEK, SITE_NAME, SITE_URL, ogImage } from '@/lib/site'
 import { boardVerdict } from '@/lib/verdict'
 import { PASS_LABELS, parseViewState, viewStatePath, type RawParams } from '@/lib/view-state'
 
@@ -28,20 +28,20 @@ function fmtDate(iso: string) {
 const isOceanView = (params: RawParams) =>
   (Array.isArray(params.view) ? params.view[0] : params.view) === 'ocean'
 
-function cardUrl(params: RawParams): string {
-  if (isOceanView(params)) return absolute('/api/og?card=ocean')
+function cardPath(params: RawParams): string {
+  if (isOceanView(params)) return '/api/og?card=ocean'
   const view = parseViewState(params)
   const q = new URLSearchParams({ card: 'board', pass: view.pass, macro: view.macro })
   if (view.mode) q.set('mode', view.mode)
-  return absolute(`/api/og?${q}`)
+  return `/api/og?${q}`
 }
 
 /**
  * The share text is the board's own verdict sentence.
  *
  * @remarks
- * - An unfurl gets one line, so it should say what the board currently says.
- * - The NOAA reads behind it are cached, so this costs a render, not a fetch.
+ * - An unfurl gets one line, so it should say what the board says now.
+ * - The NOAA reads are cached, so this costs a render, not a fetch.
  */
 export async function generateMetadata({ searchParams }: PageProps<'/'>): Promise<Metadata> {
   const params = await searchParams
@@ -65,7 +65,7 @@ export async function generateMetadata({ searchParams }: PageProps<'/'>): Promis
     description = boardVerdict(scored[0], view.pass, mode)
   }
 
-  const card = cardUrl(params)
+  const card = ogImage(cardPath(params), `${title} — ${SITE_NAME}`)
   const shared = isDefault ? SITE_NAME : title
 
   return {

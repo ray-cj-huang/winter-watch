@@ -6,8 +6,6 @@ import type { ScoredResort, ScoreMode } from '@/lib/score'
 import type { MacroRegionId, PassId } from '@/lib/types'
 import { PASS_LABELS } from '@/lib/view-state'
 
-// Satori resolves no CSS variables, and a crawler expresses no colour-scheme
-// preference, so the light half of the globals.css palette is restated here.
 const INK = '#0c1b24'
 const INK_SOFT = '#465964'
 const INK_FAINT = '#576b76'
@@ -33,10 +31,7 @@ function hex(cssVar: string): string {
 const SERIF = 'Newsreader'
 const MONO = 'IBM Plex Mono'
 
-export const CARD = { width: 1200, height: 630 }
-
-// 630 less the frame padding, the masthead rule and the footer rule. Fixed
-// rather than flexible so the footer disclaimer can never be pushed off.
+/** Fixed, not flexible, so the footer disclaimer can never be pushed off. */
 const BODY_HEIGHT = 466
 
 function fmtWeek(iso: string): string {
@@ -89,12 +84,7 @@ function Pill({ children }: { children: string }) {
   )
 }
 
-/**
- * The frame every card shares.
- *
- * The disclaimer sits in the footer because a card gets reposted without the
- * page attached, and the ranking must not travel without it.
- */
+/** The disclaimer is in the footer: a card gets reposted without the page. */
 function Frame({ children }: { children: React.ReactNode }) {
   return (
     <div
