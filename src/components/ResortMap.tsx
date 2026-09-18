@@ -5,13 +5,12 @@ import type { MapGeometry, ProjectedPoint } from '@/lib/map-types'
 import { VIEW_BOX } from '@/lib/map-types'
 import { num } from '@/lib/format'
 import { scoreColor } from '@/lib/palette'
-import type { ScoredResort } from '@/lib/score'
-import type { ScoreMode } from '@/lib/score'
+import type { MappableResort, ScoreMode } from '@/lib/score'
 
 interface Props {
   geometry: MapGeometry
   points: ProjectedPoint[]
-  scored: ScoredResort[]
+  scored: MappableResort[]
   mode: ScoreMode
   selectedId: string | null
   /** Omitted where the map is a locator rather than a control. */
@@ -130,7 +129,7 @@ function MapCallout({
   point,
   mode,
 }: {
-  entry: ScoredResort
+  entry: MappableResort
   point: ProjectedPoint
   mode: ScoreMode
 }) {
@@ -157,7 +156,7 @@ function MapCallout({
 }
 
 /** Shared by the floating tooltip and the stacked mobile panel. */
-function CalloutBody({ entry, mode }: { entry: ScoredResort; mode: ScoreMode }) {
+function CalloutBody({ entry, mode }: { entry: MappableResort; mode: ScoreMode }) {
   return (
     <>
       <p className="font-serif text-base leading-tight">{entry.resort.name}</p>

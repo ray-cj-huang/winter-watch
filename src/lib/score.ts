@@ -37,6 +37,14 @@ export interface ScoredResort {
   access: Access
 }
 
+/** What the map needs of a resort, which is less than a full tier board row. */
+export interface MappableResort {
+  resort: Resort
+  score: Score
+  verdict: ScoreLabel
+  forecast?: ResortForecast | null
+}
+
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n))
 const norm = (v: number, lo: number, hi: number) => clamp((v - lo) / (hi - lo), 0, 1)
 

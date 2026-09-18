@@ -1187,7 +1187,7 @@ export const RESORTS: Resort[] = [
     lon: 8.594,
     baseElevationFt: 4738,
     summitElevationFt: 9715,
-    avgAnnualSnowIn: 200,
+    avgAnnualSnowIn: 166,
     ensoSensitivity: 0.25,
     access: epic(unlimited(), days(5, false)),
     website: 'https://www.andermatt-sedrun.ch',
@@ -1221,7 +1221,7 @@ export const RESORTS: Resort[] = [
     summitElevationFt: 10925,
     avgAnnualSnowIn: 190,
     ensoSensitivity: 0.3,
-    access: epic(days(7, false), days(5, true, 'Also restricted 6-20 Feb 2027')),
+    access: epic(days(7, false), days(5, true, 'Five consecutive days · also restricted 6-20 Feb 2027')),
     website: 'https://www.verbier4vallees.ch',
   },
   {
@@ -1235,7 +1235,7 @@ export const RESORTS: Resort[] = [
     lon: 6.58,
     baseElevationFt: 3609,
     summitElevationFt: 10597,
-    avgAnnualSnowIn: 200,
+    avgAnnualSnowIn: 149,
     ensoSensitivity: 0.3,
     access: epic(days(5, false, 'Partner resort -- full Epic only'), null),
     website: 'https://www.les3vallees.com',
@@ -1269,7 +1269,7 @@ export const RESORTS: Resort[] = [
     summitElevationFt: 3300,
     avgAnnualSnowIn: 550,
     ensoSensitivity: -0.30,
-    access: { ...ikon(days(7), days(5)), ...epic(days(5, false), days(5, false)) },
+    access: { ...ikon(days(7), days(5)), ...epic(days(5, false, 'Five consecutive days'), days(5, false, 'Five consecutive days')) },
     website: 'https://rusutsu.com',
   },
   {
@@ -1349,7 +1349,7 @@ export const RESORTS: Resort[] = [
     summitElevationFt: 6739,
     avgAnnualSnowIn: 75,
     ensoSensitivity: -0.25,
-    access: epic(unlimited(), unlimited()),
+    access: epic(unlimited(), null),
     website: 'https://www.perisher.com.au',
   },
   {
@@ -1365,7 +1365,7 @@ export const RESORTS: Resort[] = [
     summitElevationFt: 6053,
     avgAnnualSnowIn: 118,
     ensoSensitivity: -0.25,
-    access: epic(unlimited(), unlimited()),
+    access: epic(unlimited(), null),
     website: 'https://www.mthotham.com.au',
   },
   {
@@ -1381,7 +1381,7 @@ export const RESORTS: Resort[] = [
     summitElevationFt: 5840,
     avgAnnualSnowIn: 157,
     ensoSensitivity: -0.25,
-    access: epic(unlimited(), unlimited()),
+    access: epic(unlimited(), null),
     website: 'https://www.fallscreek.com.au',
   },
   {

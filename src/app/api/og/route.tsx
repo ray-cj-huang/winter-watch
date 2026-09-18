@@ -88,7 +88,7 @@ export async function GET(request: Request) {
       title={title}
       mode={mode}
       count={ranked.count}
-      rows={ranked.leaders.map((l) => ({
+      rows={ranked.leaders.slice(0, 5).map((l) => ({
         id: l.resort.id,
         name: l.resort.name,
         locale: l.resort.locale,

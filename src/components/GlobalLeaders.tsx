@@ -3,10 +3,16 @@ import { scoreColor } from '@/lib/palette'
 import type { RankedResort } from '@/lib/summary'
 
 /** The best-placed mountains, whichever pass reaches them. */
-export default function GlobalLeaders({ leaders }: { leaders: RankedResort[] }) {
+export default function GlobalLeaders({
+  leaders,
+  limit,
+}: {
+  leaders: RankedResort[]
+  limit?: number
+}) {
   return (
     <ol className="flex flex-col">
-      {leaders.map((l, i) => (
+      {(limit ? leaders.slice(0, limit) : leaders).map((l, i) => (
         <li key={l.resort.id} className="border-t border-rule last:border-b">
           <Link
             href={`/resort/${l.resort.id}`}

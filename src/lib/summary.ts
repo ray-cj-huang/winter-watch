@@ -37,6 +37,7 @@ export interface RegionStanding {
 export interface Summary {
   /** Empty once a region is chosen, where a one-row split says nothing. */
   regions: RegionStanding[]
+  /** Every resort in the pool, best first. Callers cut it to length. */
   leaders: RankedResort[]
   count: number
 }
@@ -61,9 +62,6 @@ function median(values: Score[]): Score {
   const mid = Math.floor(sorted.length / 2)
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2
 }
-
-/** How many leaders the board shows before it stops being a summary. */
-const LEADER_COUNT = 10
 
 /**
  * The landing view: how each region sits, and what leads overall.
@@ -100,5 +98,5 @@ export function summarise(
         ]
       })
 
-  return { regions, leaders: ranked.slice(0, LEADER_COUNT), count: ranked.length }
+  return { regions, leaders: ranked, count: ranked.length }
 }

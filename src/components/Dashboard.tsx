@@ -8,7 +8,12 @@ import type { ResortForecast } from '@/lib/forecast'
 import type { MapGeometry, ProjectedPoint } from '@/lib/map-types'
 import { MACRO_LABELS } from '@/lib/map-types'
 import { RESORTS } from '@/lib/resorts'
-import { autoScoreMode, scoreResorts, type ScoreMode } from '@/lib/score'
+import {
+  autoScoreMode,
+  scoreResorts,
+  type MappableResort,
+  type ScoreMode,
+} from '@/lib/score'
 import type { MacroRegionId, PassId } from '@/lib/types'
 import { summarise } from '@/lib/summary'
 import { boardVerdict } from '@/lib/verdict'
@@ -124,6 +129,9 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
   )
 
   const selected = scored.find((s) => s.resort.id === selectedId) ?? null
+
+  // A map colours by score, which needs no tier, so it can draw either set.
+  const mapRows: MappableResort[] = isBoard ? scored : (summary?.leaders ?? [])
   const leader = isBoard ? scored[0] : summary?.leaders[0]
   const count = isBoard ? scored.length : (summary?.count ?? 0)
 
@@ -223,7 +231,7 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
         </div>
       )}
 
-      {summary && (
+      {summary && !macro && (
         <div
           className={`mt-7 grid gap-x-12 gap-y-9 ${summary.regions.length > 0 ? 'lg:grid-cols-2' : ''}`}
         >
@@ -235,26 +243,26 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
           )}
           <div>
             <p className="eyebrow mb-1 text-micro">Best placed right now</p>
-            <GlobalLeaders leaders={summary.leaders} />
+            <GlobalLeaders leaders={summary.leaders} limit={10} />
           </div>
         </div>
       )}
 
-      {isBoard && (
+      {macro && (
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <div className="min-w-0">
           <div className="border border-rule bg-surface p-2">
             <ResortMap
               geometry={maps[macro]}
               points={points[macro]}
-              scored={scored}
+              scored={mapRows}
               mode={mode}
               selectedId={selectedId}
-              onSelect={(id) => update({ selectedId: id })}
+              onSelect={isBoard ? (id) => update({ selectedId: id }) : undefined}
             />
           </div>
 
-          {selected && (
+          {isBoard && selected && (
             <div className="mt-4 border border-rule bg-surface p-4">
               <div className="flex flex-wrap items-baseline justify-between gap-3">
                 <h3 className="font-serif text-xl">{selected.resort.name}</h3>
@@ -328,12 +336,19 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
         </div>
 
         <div className="min-w-0">
-          <ResortTable
-            scored={scored}
-            mode={mode}
-            selectedId={selectedId}
-            onSelect={(id) => update({ selectedId: id })}
-          />
+          {isBoard ? (
+            <ResortTable
+              scored={scored}
+              mode={mode}
+              selectedId={selectedId}
+              onSelect={(id) => update({ selectedId: id })}
+            />
+          ) : (
+            <>
+              <p className="eyebrow mb-1 text-micro">Ranked · every pass</p>
+              <GlobalLeaders leaders={summary?.leaders ?? []} />
+            </>
+          )}
         </div>
       </div>
       )}
