@@ -25,7 +25,7 @@ const plexMono = IBM_Plex_Mono({
 
 const BOARD_CARD = ogImage(
   '/api/og?card=board',
-  'Ikon pass destinations ranked against the current ENSO state',
+  'Pass destinations ranked against the current ENSO state',
 )
 
 export const metadata: Metadata = {

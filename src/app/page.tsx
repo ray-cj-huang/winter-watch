@@ -10,7 +10,7 @@ import { nino } from '@/lib/format'
 import { getForecasts } from '@/lib/forecast'
 import { getMapPayload } from '@/lib/map-payload'
 import { MACRO_LABELS } from '@/lib/map-types'
-import { BASE_BLACKOUT_DATES, RESORTS } from '@/lib/resorts'
+import { RESORTS } from '@/lib/resorts'
 import { pickMode, scoreResorts } from '@/lib/score'
 import { SITE_DEK, SITE_NAME, SITE_URL, ogImage } from '@/lib/site'
 import { boardVerdict } from '@/lib/verdict'
@@ -199,26 +199,11 @@ export default function Page({ searchParams }: PageProps<'/'>) {
           </div>
         </div>
 
-        <div className="mt-6 border border-rule bg-surface p-4">
-          <p className="eyebrow mb-2 text-micro">
-            Ikon Base blackout dates · Northern Hemisphere
-          </p>
-          <ul className="flex flex-wrap gap-2">
-            {BASE_BLACKOUT_DATES.map((b) => (
-              <li
-                key={b.range}
-                className="tnum rounded-sm border border-rule-strong px-2.5 py-1 font-mono text-meta text-ink-soft"
-              >
-                {b.range} <span className="text-ink-faint">· {b.label}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-3 text-sm text-ink-faint">
-            Alterra adjusts both the roster and the blackout calendar between
-            announcement and season, and secondary sources disagree on the details.
-            Verify on ikonpass.com before buying anything.
-          </p>
-        </div>
+        <p className="mt-6 text-sm text-ink-faint">
+          Alterra and Vail both adjust their rosters and blackout calendars
+          between announcement and season, and secondary sources disagree on the
+          details. The operators&apos; own destination pages are the authority.
+        </p>
 
         <p className="mt-4 border border-rule border-l-[3px] border-l-hot bg-surface px-4 py-3.5 text-sm text-ink-soft">
           <strong className="font-semibold">This is a model, not a NOAA product.</strong>{' '}

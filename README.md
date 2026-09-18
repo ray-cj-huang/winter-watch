@@ -1,10 +1,11 @@
 # El Niño Winter Watch
 
 A live read on the 2026–27 snow season: NOAA's ocean signal, the regional split it
-implies, and which mountains your Ikon pass actually reaches.
+implies, and which mountains your pass actually reaches.
 
-Pick a pass tier and a region; the app ranks every destination that tier reaches
-against the current ENSO state and the live GFS run, and plots them on a map.
+Pick a pass tier — Ikon, Ikon Base, Epic or Epic Local — and a region; the app
+ranks every destination that tier reaches against the current ENSO state and the
+live GFS run, and plots them on a map.
 
 **[winter-watch.vercel.app](https://winter-watch.vercel.app)**
 
@@ -22,7 +23,7 @@ Everything numeric is live NOAA, re-fetched on a schedule. Nothing is hardcoded.
 | --- | --- | --- |
 | [CPC weekly Niño SSTs](https://www.cpc.ncep.noaa.gov/data/indices/wksst9120.for) | Niño 1+2 / 3 / 3.4 / 4 anomalies, event strength and flavour | Weekly (Mondays) |
 | [CPC Oceanic Niño Index](https://www.cpc.ncep.noaa.gov/data/indices/oni.ascii.txt) | Official 3-month running mean | Monthly |
-| [NOAA GFS](https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast) (via Open-Meteo) | 16-day point forecasts for all 58 resorts | 4× daily (every 6 hours, UTC) |
+| [NOAA GFS](https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast) (via Open-Meteo) | 16-day point forecasts for all 84 resorts | 4× daily (every 6 hours, UTC) |
 
 The CPC weekly file is fixed-width and its columns collide when an anomaly is
 negative (`22.4-0.1`), so the parser pulls signed decimal tokens rather than
@@ -77,7 +78,7 @@ published ENSO composite patterns. For the official probabilistic outlook, see t
 
 Every view has an address. Pass tier, region, ranking mode and the selected
 resort all live in the query string (`/?pass=ikon&macro=japan&id=niseko`), so a
-link reproduces exactly what was on screen. Each of the 58 destinations also has
+link reproduces exactly what was on screen. Each of the 84 destinations also has
 its own page at `/resort/<id>`, with its standing, its forecast and the access
 rules for both tiers.
 
@@ -90,11 +91,19 @@ attached. `Card ↓` next to any view downloads it as a PNG.
 ## Pass rosters
 
 `src/lib/resorts.ts` is the single source of truth for access, day limits and
-blackouts — nothing else hardcodes a roster. Alterra adjusts both the roster and
-the blackout calendar between announcement and season, and secondary sources
-disagree on the details, so **verify on [ikonpass.com](https://www.ikonpass.com/en/destinations)
-before buying anything.** Epic and other passes are next; adding one means adding
-a `PassId` and an `access` entry per resort.
+blackouts — nothing else hardcodes a roster. Four tiers are modelled: Ikon and
+Ikon Base, Epic and Epic Local. A mountain on both passes carries an `access`
+entry for each, which is why Rusutsu appears under Ikon and Epic alike.
+
+The roster is destinations, not every mountain a pass touches. Epic's Midwest
+and Mid-Atlantic feeder hills are left out: a 300 ft bump has no seasonal
+signal worth ranking, and including them would bury the mountains people plan
+trips around.
+
+Alterra and Vail both adjust their rosters and blackout calendars between
+announcement and season, and secondary sources disagree on the details, so
+**the operators' own destination pages are the authority**, not this table.
+Adding a pass means adding a `PassId` and an `access` entry per resort.
 
 ## Stack
 
@@ -149,10 +158,9 @@ things and reading the diffs. Worth knowing where that does and does not matter:
   fixtures. The scoring weights in `src/lib/score.ts` are one reading of
   published ENSO composites. They are written down so you can disagree with
   them.
-- **The pass roster is hand-compiled** from published Alterra material, so it
-  can be wrong or go stale. Check
-  [ikonpass.com](https://www.ikonpass.com/en/destinations) before buying
-  anything.
+- **The pass roster is hand-compiled** from published operator material, so it
+  can be wrong or go stale. The operators' own destination pages are the
+  authority.
 - **None of this is a forecast.** For the official probabilistic outlook, see the
   [CPC seasonal outlooks](https://www.cpc.ncep.noaa.gov/products/predictions/long_range/seasonal.php).
 

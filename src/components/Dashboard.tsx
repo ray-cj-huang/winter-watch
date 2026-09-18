@@ -19,6 +19,7 @@ import {
   viewStatePath,
   type ViewState,
 } from '@/lib/view-state'
+import BlackoutDates from './BlackoutDates'
 import ForecastStrip from './ForecastStrip'
 import ResortMap from './ResortMap'
 import ResortTable from './ResortTable'
@@ -168,6 +169,10 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
           </>
         )}
       </p>
+
+      <div className="mt-5">
+        <BlackoutDates pass={pass} />
+      </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <div className="min-w-0">

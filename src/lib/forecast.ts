@@ -5,7 +5,7 @@ import type { Resort } from './types'
 /** Open-Meteo is a delivery layer; the numbers are NOAA GFS. */
 const GFS_ENDPOINT = 'https://api.open-meteo.com/v1/gfs'
 
-/** Points per request. 58 resorts -> 3 round trips, well under URL limits. */
+/** Points per request. 84 resorts -> 4 round trips, well under URL limits. */
 const CHUNK = 25
 const FORECAST_DAYS = 16
 

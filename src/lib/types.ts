@@ -1,4 +1,4 @@
-export type PassId = 'ikon' | 'ikon-base'
+export type PassId = 'ikon' | 'ikon-base' | 'epic' | 'epic-local'
 
 export type RegionId =
   | 'us-west'

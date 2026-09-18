@@ -2,17 +2,21 @@ import { RESORTS_BY_ID } from './resorts'
 import type { ScoreMode } from './score'
 import type { MacroRegionId, PassId } from './types'
 
-export const PASS_IDS: PassId[] = ['ikon-base', 'ikon']
+export const PASS_IDS: PassId[] = ['ikon-base', 'ikon', 'epic-local', 'epic']
 export const MACRO_IDS: MacroRegionId[] = ['us', 'canada', 'europe', 'japan', 'southern']
 
 export const PASS_LABELS: Record<PassId, string> = {
   'ikon-base': 'Ikon Base',
   ikon: 'Ikon',
+  'epic-local': 'Epic Local',
+  epic: 'Epic',
 }
 
 export const PASS_BLURBS: Record<PassId, string> = {
   'ikon-base': 'Base tier · 5 days at most destinations',
   ikon: 'Full pass · 7 days at partners, unlimited at core',
+  'epic-local': 'Local tier · unlimited at most, 10 shared days at the flagships',
+  epic: 'Full pass · unlimited at every Vail Resorts mountain',
 }
 
 const DEFAULT_PASS: PassId = 'ikon-base'

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
+import BlackoutDates from '@/components/BlackoutDates'
 import ForecastStrip from '@/components/ForecastStrip'
 import JsonLd from '@/components/JsonLd'
 import ResortMap from '@/components/ResortMap'
@@ -13,7 +14,7 @@ import { getForecasts } from '@/lib/forecast'
 import { getMacroMap } from '@/lib/map-payload'
 import { MACRO_LABELS } from '@/lib/map-types'
 import { scoreColor } from '@/lib/palette'
-import { BASE_BLACKOUT_DATES, RESORTS, RESORTS_BY_ID } from '@/lib/resorts'
+import { RESORTS, RESORTS_BY_ID } from '@/lib/resorts'
 import { rankInRegion } from '@/lib/score'
 import { absolute, ogImage } from '@/lib/site'
 import type { Access, PassId, Resort } from '@/lib/types'
@@ -247,7 +248,7 @@ export default async function ResortPage({ params }: PageProps<'/resort/[id]'>) 
       </section>
 
       <section className="pt-10">
-        <SectionHeader title="Pass access" meta="Verify before buying" />
+        <SectionHeader title="Pass access" meta="Operator is the authority" />
         <dl className="flex flex-col gap-3">
           {PASS_IDS.map((p: PassId) => {
             const access = resort.access[p]
@@ -265,23 +266,16 @@ export default async function ResortPage({ params }: PageProps<'/resort/[id]'>) 
           })}
         </dl>
 
-        {tiers.includes('ikon-base') && resort.access['ikon-base']?.blackouts && (
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {BASE_BLACKOUT_DATES.map((b) => (
-              <li
-                key={b.range}
-                className="tnum rounded-sm border border-rule-strong px-2.5 py-1 font-mono text-meta text-ink-soft"
-              >
-                {b.range} <span className="text-ink-faint">· {b.label}</span>
-              </li>
-            ))}
-          </ul>
-        )}
+        {PASS_IDS.filter((p) => resort.access[p]?.blackouts).map((p) => (
+          <div key={p} className="mt-4">
+            <BlackoutDates pass={p} />
+          </div>
+        ))}
 
         <p className="mt-3 text-sm text-ink-faint">
-          Alterra adjusts both the roster and the blackout calendar between
-          announcement and season, and secondary sources disagree on the details.
-          Verify on ikonpass.com before buying anything.
+          Alterra and Vail both adjust their rosters and blackout calendars
+          between announcement and season, and secondary sources disagree on the
+          details. The operators&apos; own destination pages are the authority.
         </p>
 
         <p className="mt-4 border border-rule border-l-[3px] border-l-hot bg-surface px-4 py-3.5 text-sm text-ink-soft">

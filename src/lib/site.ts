@@ -22,7 +22,7 @@ export function absolute(path: string): string {
 export const SITE_NAME = 'El Niño Winter Watch'
 
 export const SITE_DEK =
-  'Live NOAA data on this winter\u2019s El Niño, and which resorts on your Ikon pass are best placed for it.'
+  'Live NOAA data on this winter\u2019s El Niño, and which resorts on your pass are best placed for it.'
 
 export const CARD_SIZE = { width: 1200, height: 630 }
 
