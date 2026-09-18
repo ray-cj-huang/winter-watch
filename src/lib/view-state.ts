@@ -19,13 +19,12 @@ export const PASS_BLURBS: Record<PassId, string> = {
   epic: 'Full pass · unlimited at every Vail Resorts mountain',
 }
 
-const DEFAULT_PASS: PassId = 'ikon-base'
-const DEFAULT_MACRO: MacroRegionId = 'us'
-
 /** Everything the board's query string encodes. */
 export interface ViewState {
-  pass: PassId
-  macro: MacroRegionId
+  /** `null` is every pass, not a hidden default. */
+  pass: PassId | null
+  /** `null` is every region, which the summary can render and a map cannot. */
+  macro: MacroRegionId | null
   /** An explicit override. `null` leaves the choice to `pickMode`. */
   mode: ScoreMode | null
   selectedId: string | null
@@ -43,20 +42,18 @@ export function parseViewState(params: RawParams): ViewState {
   const id = one(params.id)
 
   return {
-    pass: PASS_IDS.includes(pass as PassId) ? (pass as PassId) : DEFAULT_PASS,
-    macro: MACRO_IDS.includes(macro as MacroRegionId)
-      ? (macro as MacroRegionId)
-      : DEFAULT_MACRO,
+    pass: PASS_IDS.includes(pass as PassId) ? (pass as PassId) : null,
+    macro: MACRO_IDS.includes(macro as MacroRegionId) ? (macro as MacroRegionId) : null,
     mode: mode === 'live' || mode === 'seasonal' ? mode : null,
     selectedId: id && RESORTS_BY_ID.has(id) ? id : null,
   }
 }
 
-/** Defaults are omitted so an untouched board stays `/`. */
+/** Every choice is written out; `/` is the summary, not a disguised board. */
 export function viewStatePath(v: ViewState): string {
   const q = new URLSearchParams()
-  if (v.pass !== DEFAULT_PASS) q.set('pass', v.pass)
-  if (v.macro !== DEFAULT_MACRO) q.set('macro', v.macro)
+  if (v.pass) q.set('pass', v.pass)
+  if (v.macro) q.set('macro', v.macro)
   if (v.mode) q.set('mode', v.mode)
   if (v.selectedId) q.set('id', v.selectedId)
   const query = q.toString()

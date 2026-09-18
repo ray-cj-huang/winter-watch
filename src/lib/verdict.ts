@@ -16,13 +16,13 @@ const FAVORED = SCORE_BANDS[0].min
  * - Says plainly when nothing clears the band instead of dressing up a leader.
  */
 export function boardVerdict(
-  top: ScoredResort | undefined,
-  pass: PassId,
+  top: { resort: { name: string }; score: number } | undefined,
+  pass: PassId | null,
   mode: ScoreMode,
 ): string {
-  if (!top) return `No destinations on the ${PASS_LABELS[pass]} pass in this region.`
+  if (!top) return 'No destinations here on that tier.'
 
-  const where = `on the ${PASS_LABELS[pass]} pass`
+  const where = pass ? `on the ${PASS_LABELS[pass]} pass` : 'anywhere on either pass'
   if (top.score < FAVORED) {
     return `Nothing ${where} is clearly favored right now. ${top.resort.name} leads at ${Math.round(top.score)}.`
   }

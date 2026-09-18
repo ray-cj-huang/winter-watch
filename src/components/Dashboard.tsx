@@ -8,8 +8,9 @@ import type { ResortForecast } from '@/lib/forecast'
 import type { MapGeometry, ProjectedPoint } from '@/lib/map-types'
 import { MACRO_LABELS } from '@/lib/map-types'
 import { RESORTS } from '@/lib/resorts'
-import { pickMode, scoreResorts, type ScoreMode } from '@/lib/score'
+import { autoScoreMode, scoreResorts, type ScoreMode } from '@/lib/score'
 import type { MacroRegionId, PassId } from '@/lib/types'
+import { summarise } from '@/lib/summary'
 import { boardVerdict } from '@/lib/verdict'
 import {
   MACRO_IDS,
@@ -20,6 +21,8 @@ import {
   type ViewState,
 } from '@/lib/view-state'
 import BlackoutDates from './BlackoutDates'
+import GlobalLeaders from './GlobalLeaders'
+import RegionSplit from './RegionSplit'
 import ForecastStrip from './ForecastStrip'
 import ResortMap from './ResortMap'
 import ResortTable from './ResortTable'
@@ -70,9 +73,11 @@ function Segmented<T extends string>({
   )
 }
 
+const ALL = 'all'
+
 export default function Dashboard({ enso, forecasts, maps, points, initialView }: Props) {
-  const [pass, setPass] = useState<PassId>(initialView.pass)
-  const [macro, setMacro] = useState<MacroRegionId>(initialView.macro)
+  const [pass, setPass] = useState<PassId | null>(initialView.pass)
+  const [macro, setMacro] = useState<MacroRegionId | null>(initialView.macro)
   const [modeOverride, setModeOverride] = useState<ScoreMode | null>(initialView.mode)
   const [selectedId, setSelectedId] = useState<string | null>(initialView.selectedId)
 
@@ -92,75 +97,117 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
     window.history.replaceState(null, '', viewStatePath(next))
   }
 
-  const inRegion = useMemo(() => RESORTS.filter((r) => r.macro === macro), [macro])
+  // Whatever is on screen, which is the set `pickMode` is meant to judge.
+  const pool = useMemo(
+    () => RESORTS.filter((r) => (!pass || r.access[pass]) && (!macro || r.macro === macro)),
+    [pass, macro],
+  )
 
-  const autoMode = useMemo(() => pickMode(inRegion, forecasts), [inRegion, forecasts])
+  const autoMode = useMemo(
+    () => autoScoreMode(pool, forecasts, macro),
+    [pool, forecasts, macro],
+  )
   const mode: ScoreMode = modeOverride ?? autoMode
 
+  // A map needs a region and access glyphs need a tier, so the full board
+  // waits until both are chosen. Until then the summary stands in.
+  const isBoard = pass !== null && macro !== null
+
   const scored = useMemo(
-    () => scoreResorts(inRegion, pass, enso, forecasts, mode),
-    [inRegion, pass, enso, forecasts, mode],
+    () => (pass && macro ? scoreResorts(pool, pass, enso, forecasts, mode) : []),
+    [pass, macro, pool, enso, forecasts, mode],
+  )
+
+  const summary = useMemo(
+    () => (isBoard ? null : summarise(enso, forecasts, mode, pass, macro)),
+    [isBoard, enso, forecasts, mode, pass, macro],
   )
 
   const selected = scored.find((s) => s.resort.id === selectedId) ?? null
+  const leader = isBoard ? scored[0] : summary?.leaders[0]
+  const count = isBoard ? scored.length : (summary?.count ?? 0)
 
   // Count per region for the switcher, so empty tiers are obvious up front.
   const regionCounts = useMemo(() => {
     const counts = {} as Record<MacroRegionId, number>
     for (const m of MACRO_IDS) {
-      counts[m] = RESORTS.filter((r) => r.macro === m && r.access[pass]).length
+      counts[m] = RESORTS.filter((r) => r.macro === m && (!pass || r.access[pass])).length
     }
     return counts
   }, [pass])
 
-  const cardUrl = `/api/og?card=board&pass=${pass}&macro=${macro}&mode=${mode}`
+  const cardUrl = `/api/og?card=board${pass ? `&pass=${pass}` : ''}${macro ? `&macro=${macro}` : ''}&mode=${mode}`
 
   return (
     <section className="pt-10">
-      <SectionHeader title="Your pass, mapped to the signal" meta={<>{scored.length} destination{scored.length === 1 ? '' : 's'}</>} />
+      <SectionHeader
+        title={isBoard ? 'Your pass, mapped to the signal' : 'Where the signal points'}
+        meta={<>{count} destination{count === 1 ? '' : 's'}</>}
+      />
 
       <p className="mb-5 font-serif text-xl italic text-ink-soft">
-        {boardVerdict(scored[0], pass, mode)}
+        {boardVerdict(leader, pass, mode)}
       </p>
 
-      <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
         <Segmented
-          label="Pass"
-          value={pass}
-          options={PASS_IDS.map((p) => ({ id: p, label: PASS_LABELS[p] }))}
-          onChange={(p) => update({ pass: p, selectedId: null })}
-        />
+            label="Pass"
+            value={pass ?? ALL}
+            options={[
+              { id: ALL, label: 'All' },
+              ...PASS_IDS.map((p) => ({ id: p as string, label: PASS_LABELS[p] })),
+            ]}
+            onChange={(v) =>
+              update({ pass: v === ALL ? null : (v as PassId), selectedId: null })
+            }
+          />
+        <Segmented
+            label="Rank by"
+            value={mode}
+            options={[
+              { id: 'seasonal' as ScoreMode, label: 'Seasonal' },
+              { id: 'live' as ScoreMode, label: 'Live GFS' },
+            ]}
+            onChange={(m) => update({ mode: m })}
+          />
+          <ShareLink label="Share" cardUrl={cardUrl} />
+        </div>
         <Segmented
           label="Region"
-          value={macro}
-          options={MACRO_IDS.map((m) => ({
-            id: m,
-            label: MACRO_LABELS[m],
-            disabled: regionCounts[m] === 0,
-          }))}
-          onChange={(m) => update({ macro: m, selectedId: null, mode: null })}
-        />
-        <Segmented
-          label="Rank by"
-          value={mode}
+          value={macro ?? ALL}
           options={[
-            { id: 'seasonal' as ScoreMode, label: 'Seasonal' },
-            { id: 'live' as ScoreMode, label: 'Live GFS' },
+            { id: ALL, label: 'All' },
+            ...MACRO_IDS.map((m) => ({
+              id: m as string,
+              label: MACRO_LABELS[m],
+              disabled: regionCounts[m] === 0,
+            })),
           ]}
-          onChange={(m) => update({ mode: m })}
+          onChange={(v) =>
+            update({
+              macro: v === ALL ? null : (v as MacroRegionId),
+              selectedId: null,
+              mode: null,
+            })
+          }
         />
-        <ShareLink label="Share" cardUrl={cardUrl} />
       </div>
 
       <p className="mt-3 text-sm text-ink-soft">
-        {PASS_BLURBS[pass]}.{' '}
+        {pass ? `${PASS_BLURBS[pass]}.` : 'Every destination on both passes.'}{' '}
         {mode === 'seasonal' ? (
           <>
             Ranking on the <strong className="font-semibold">seasonal</strong> ENSO
             signal.
-            {autoMode === 'seasonal' && modeOverride === null && (
-              <> The 16-day forecast is dry everywhere, so there is nothing live to rank yet.</>
-            )}
+            {modeOverride === null &&
+              (macro === null ? (
+                <> Regions sit in opposite seasons, so a single live run cannot rank them together.</>
+              ) : (
+                autoMode === 'seasonal' && (
+                  <> The 16-day forecast is dry everywhere, so there is nothing live to rank yet.</>
+                )
+              ))}
           </>
         ) : (
           <>
@@ -170,10 +217,30 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
         )}
       </p>
 
-      <div className="mt-5">
-        <BlackoutDates pass={pass} />
-      </div>
+      {pass && (
+        <div className="mt-5">
+          <BlackoutDates pass={pass} />
+        </div>
+      )}
 
+      {summary && (
+        <div
+          className={`mt-7 grid gap-x-12 gap-y-9 ${summary.regions.length > 0 ? 'lg:grid-cols-2' : ''}`}
+        >
+          {summary.regions.length > 0 && (
+            <div>
+              <p className="eyebrow mb-1 text-micro">The split · median score</p>
+              <RegionSplit regions={summary.regions} pass={pass} mode={modeOverride} />
+            </div>
+          )}
+          <div>
+            <p className="eyebrow mb-1 text-micro">Best placed right now</p>
+            <GlobalLeaders leaders={summary.leaders} />
+          </div>
+        </div>
+      )}
+
+      {isBoard && (
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
         <div className="min-w-0">
           <div className="border border-rule bg-surface p-2">
@@ -269,6 +336,7 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
           />
         </div>
       </div>
+      )}
     </section>
   )
 }

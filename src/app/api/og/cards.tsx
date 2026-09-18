@@ -152,19 +152,28 @@ function Header({ enso, trailing }: { enso: EnsoState; trailing: string }) {
   )
 }
 
+/** One line of a board card, from either a tier board or the summary. */
+export interface CardRow {
+  id: string
+  name: string
+  locale: string
+  score: number
+  snowIn7d: number | null
+}
+
 export function BoardCard({
   enso,
-  pass,
-  macro,
+  title,
   mode,
-  scored,
+  rows,
+  count,
   verdict,
 }: {
   enso: EnsoState
-  pass: PassId
-  macro: MacroRegionId
+  title: string
   mode: ScoreMode
-  scored: ScoredResort[]
+  rows: CardRow[]
+  count: number
   verdict: string
 }) {
   return (
@@ -177,7 +186,7 @@ export function BoardCard({
       />
 
       <div style={{ display: 'flex', fontFamily: SERIF, fontSize: 50, lineHeight: 1.15, marginTop: 10 }}>
-        {PASS_LABELS[pass]} · {MACRO_LABELS[macro]}
+        {title}
       </div>
 
       <div
@@ -193,9 +202,9 @@ export function BoardCard({
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', marginTop: 14 }}>
-        {scored.slice(0, 5).map((s, i) => (
+        {rows.slice(0, 5).map((s, i) => (
           <div
-            key={s.resort.id}
+            key={s.id}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -217,16 +226,16 @@ export function BoardCard({
                 {i + 1}
               </div>
               <div style={{ display: 'flex', fontFamily: SERIF, fontSize: 32 }}>
-                {s.resort.name}
+                {s.name}
               </div>
               <div style={{ display: 'flex', fontFamily: MONO, fontSize: 20, color: INK_FAINT }}>
-                {s.resort.locale}
+                {s.locale}
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 16 }}>
-              {mode === 'live' && s.forecast && (
+              {mode === 'live' && s.snowIn7d !== null && (
                 <div style={{ display: 'flex', fontFamily: MONO, fontSize: 21, color: INK_SOFT }}>
-                  {s.forecast.snowIn7d.toFixed(1)}&quot; / 7d
+                  {s.snowIn7d.toFixed(1)}&quot; / 7d
                 </div>
               )}
               <div
@@ -255,7 +264,7 @@ export function BoardCard({
           color: INK_FAINT,
         }}
       >
-        {scored.length} destinations ranked ·{' '}
+        {count} destinations ranked ·{' '}
         {mode === 'live'
           ? 'live GFS run, mixed 65/35 with the seasonal signal'
           : 'seasonal ENSO signal'}

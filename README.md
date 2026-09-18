@@ -3,9 +3,10 @@
 A live read on the 2026–27 snow season: NOAA's ocean signal, the regional split it
 implies, and which mountains your pass actually reaches.
 
-Pick a pass tier — Ikon, Ikon Base, Epic or Epic Local — and a region; the app
-ranks every destination that tier reaches against the current ENSO state and the
-live GFS run, and plots them on a map.
+It opens on the whole picture: how each region sits against the current ocean
+state, and which mountains are best placed anywhere. Narrow to a pass tier —
+Ikon, Ikon Base, Epic or Epic Local — and a region, and it ranks every
+destination that tier reaches against the live GFS run and plots them on a map.
 
 **[winter-watch.vercel.app](https://winter-watch.vercel.app)**
 
@@ -78,9 +79,15 @@ published ENSO composite patterns. For the official probabilistic outlook, see t
 
 Every view has an address. Pass tier, region, ranking mode and the selected
 resort all live in the query string (`/?pass=ikon&macro=japan&id=niseko`), so a
-link reproduces exactly what was on screen. Each of the 84 destinations also has
-its own page at `/resort/<id>`, with its standing, its forecast and the access
-rules for both tiers.
+link reproduces exactly what was on screen. Nothing is implied: `/` sets no
+filters and shows the summary — how each region sits, and the best-placed
+mountains on any pass — because a landing page that silently picked one tier
+made `/` mean something it did not say.
+
+Choosing a region reveals the map, and choosing a tier reveals the access
+glyphs, so the board fills in as you narrow. Each of the 84 destinations also
+has its own page at `/resort/<id>`, with its standing, its forecast and the
+access rules for all four tiers.
 
 Links unfurl as rendered cards, generated on demand by `/api/og` from the same
 cached NOAA reads the page uses — a board, a single resort, or the ocean state

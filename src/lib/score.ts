@@ -2,7 +2,15 @@ import type { EnsoState } from './enso'
 import type { ResortForecast } from './forecast'
 import { scoreLabel, type ScoreLabel } from './palette'
 import { RESORTS } from './resorts'
-import type { Access, PassId, Resort, Score, SignedUnit, Unit } from './types'
+import type {
+  Access,
+  MacroRegionId,
+  PassId,
+  Resort,
+  Score,
+  SignedUnit,
+  Unit,
+} from './types'
 
 export type ScoreMode = 'seasonal' | 'live'
 
@@ -122,6 +130,36 @@ export function pickMode(
   return best >= 6 ? 'live' : 'seasonal'
 }
 
+/** How much of a live-mode score the model run carries, against the pattern. */
+const LIVE_WEIGHT = 0.65
+
+/**
+ * Mix the live run into the seasonal signal.
+ *
+ * @remarks
+ * - The run leads in live mode, but one run cannot decide the order alone.
+ * - Shared, so the board and the summary never weight a run differently.
+ */
+export function blendScore(seasonal: Score, live: Score | null, mode: ScoreMode): Score {
+  if (mode !== 'live' || live === null) return seasonal
+  return live * LIVE_WEIGHT + seasonal * (1 - LIVE_WEIGHT)
+}
+
+/**
+ * The ranking mode a view should default to.
+ *
+ * @remarks
+ * - Live is a regional judgement: it asks whether this region's model has news.
+ * - A pool spanning both hemispheres has no single honest answer, so it stays seasonal.
+ */
+export function autoScoreMode(
+  resorts: Resort[],
+  forecasts: Record<string, ResortForecast>,
+  macro: MacroRegionId | null,
+): ScoreMode {
+  return macro ? pickMode(resorts, forecasts) : 'seasonal'
+}
+
 export function scoreResorts(
   resorts: Resort[],
   pass: PassId,
@@ -137,10 +175,7 @@ export function scoreResorts(
     const { score: seasonal, effect } = seasonalScore(resort, enso)
     const live = liveScore(forecast)
 
-    // In live mode the model run leads, but the seasonal pattern keeps enough
-    // weight that a single GFS run cannot decide the order on its own.
-    const score =
-      mode === 'live' && live !== null ? live * 0.65 + seasonal * 0.35 : seasonal
+    const score = blendScore(seasonal, live, mode)
 
     return [
       {

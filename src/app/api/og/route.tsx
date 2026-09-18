@@ -4,10 +4,12 @@ import { ImageResponse } from 'next/og'
 import { getEnsoState } from '@/lib/enso'
 import { getForecasts } from '@/lib/forecast'
 import { RESORTS, RESORTS_BY_ID } from '@/lib/resorts'
-import { pickMode, rankInRegion, scoreResorts } from '@/lib/score'
+import { autoScoreMode, rankInRegion } from '@/lib/score'
+import { summarise } from '@/lib/summary'
 import { boardVerdict } from '@/lib/verdict'
 import { CARD_SIZE } from '@/lib/site'
-import { PASS_IDS, parseViewState } from '@/lib/view-state'
+import { MACRO_LABELS } from '@/lib/map-types'
+import { PASS_IDS, PASS_LABELS, parseViewState } from '@/lib/view-state'
 import { BoardCard, OceanCard, ResortCard } from './cards'
 
 const [serif, mono] = await Promise.all([
@@ -69,18 +71,31 @@ export async function GET(request: Request) {
     )
   }
 
-  const inRegion = RESORTS.filter((r) => r.macro === view.macro)
-  const mode = view.mode ?? pickMode(inRegion, forecasts)
-  const scored = scoreResorts(inRegion, view.pass, enso, forecasts, mode)
+  const pool = RESORTS.filter(
+    (r) => (!view.pass || r.access[view.pass]) && (!view.macro || r.macro === view.macro),
+  )
+  const mode = view.mode ?? autoScoreMode(pool, forecasts, view.macro)
+  const ranked = summarise(enso, forecasts, mode, view.pass, view.macro)
+
+  const title =
+    [view.pass && PASS_LABELS[view.pass], view.macro && MACRO_LABELS[view.macro]]
+      .filter(Boolean)
+      .join(' · ') || 'Every pass · Worldwide'
 
   return png(
     <BoardCard
       enso={enso}
-      pass={view.pass}
-      macro={view.macro}
+      title={title}
       mode={mode}
-      scored={scored}
-      verdict={boardVerdict(scored[0], view.pass, mode)}
+      count={ranked.count}
+      rows={ranked.leaders.map((l) => ({
+        id: l.resort.id,
+        name: l.resort.name,
+        locale: l.resort.locale,
+        score: l.score,
+        snowIn7d: forecasts[l.resort.id]?.snowIn7d ?? null,
+      }))}
+      verdict={boardVerdict(ranked.leaders[0], view.pass, mode)}
     />,
   )
 }

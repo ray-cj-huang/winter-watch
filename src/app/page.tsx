@@ -11,10 +11,17 @@ import { getForecasts } from '@/lib/forecast'
 import { getMapPayload } from '@/lib/map-payload'
 import { MACRO_LABELS } from '@/lib/map-types'
 import { RESORTS } from '@/lib/resorts'
-import { pickMode, scoreResorts } from '@/lib/score'
+import { autoScoreMode } from '@/lib/score'
 import { SITE_DEK, SITE_NAME, SITE_URL, ogImage } from '@/lib/site'
+import { summarise } from '@/lib/summary'
 import { boardVerdict } from '@/lib/verdict'
-import { PASS_LABELS, parseViewState, viewStatePath, type RawParams } from '@/lib/view-state'
+import {
+  PASS_LABELS,
+  parseViewState,
+  viewStatePath,
+  type RawParams,
+  type ViewState,
+} from '@/lib/view-state'
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -31,9 +38,20 @@ const isOceanView = (params: RawParams) =>
 function cardPath(params: RawParams): string {
   if (isOceanView(params)) return '/api/og?card=ocean'
   const view = parseViewState(params)
-  const q = new URLSearchParams({ card: 'board', pass: view.pass, macro: view.macro })
+  const q = new URLSearchParams({ card: 'board' })
+  if (view.pass) q.set('pass', view.pass)
+  if (view.macro) q.set('macro', view.macro)
   if (view.mode) q.set('mode', view.mode)
   return `/api/og?${q}`
+}
+
+/** `Ikon · Japan`, or the site's own name where nothing is filtered. */
+function viewTitle(view: ViewState): string {
+  const bits = [
+    view.pass && PASS_LABELS[view.pass],
+    view.macro && MACRO_LABELS[view.macro],
+  ].filter(Boolean)
+  return bits.length > 0 ? bits.join(' · ') : SITE_NAME
 }
 
 /**
@@ -46,34 +64,36 @@ function cardPath(params: RawParams): string {
 export async function generateMetadata({ searchParams }: PageProps<'/'>): Promise<Metadata> {
   const params = await searchParams
   const view = parseViewState(params)
-  const isDefault = viewStatePath(view) === '/' && !isOceanView(params)
+  const isSummary = viewStatePath(view) === '/' && !isOceanView(params)
+  const title = isOceanView(params) ? 'Ocean state' : viewTitle(view)
 
-  let description = SITE_DEK
-  let title = `${PASS_LABELS[view.pass]} · ${MACRO_LABELS[view.macro]}`
-
+  // The unfurl gets the live read; search keeps the stable one.
+  let social = SITE_DEK
   if (isOceanView(params)) {
     const enso = await getEnsoState()
-    title = 'Ocean state'
-    description = nino(
+    social = nino(
       `Niño 3.4 is ${enso.nino34 > 0 ? '+' : ''}${enso.nino34.toFixed(1)}°C, a ${enso.strength.toLowerCase()} ${enso.phase} with a ${enso.flavor.toLowerCase()} flavour.`,
     )
-  } else if (!isDefault) {
+  } else {
     const [enso, forecasts] = await Promise.all([getEnsoState(), getForecasts()])
-    const inRegion = RESORTS.filter((r) => r.macro === view.macro)
-    const mode = view.mode ?? pickMode(inRegion, forecasts)
-    const scored = scoreResorts(inRegion, view.pass, enso, forecasts, mode)
-    description = boardVerdict(scored[0], view.pass, mode)
+    const pool = RESORTS.filter(
+      (r) => (!view.pass || r.access[view.pass]) && (!view.macro || r.macro === view.macro),
+    )
+    const mode = view.mode ?? autoScoreMode(pool, forecasts, view.macro)
+    const ranked = summarise(enso, forecasts, mode, view.pass, view.macro)
+    social = boardVerdict(ranked.leaders[0], view.pass, mode)
   }
 
   const card = ogImage(cardPath(params), `${title} — ${SITE_NAME}`)
-  const shared = isDefault ? SITE_NAME : title
 
   return {
-    title: isDefault ? { absolute: SITE_NAME } : title,
-    description,
+    // The root page is the layout's own segment, so its title template never
+    // reaches here and the suffix has to be written out.
+    title: { absolute: isSummary ? SITE_NAME : `${title} — ${SITE_NAME}` },
+    description: isSummary ? SITE_DEK : social,
     alternates: { canonical: '/' },
-    openGraph: { title: shared, description, url: '/', images: [card] },
-    twitter: { title: shared, description, images: [card] },
+    openGraph: { title, description: social, url: '/', images: [card] },
+    twitter: { title, description: social, images: [card] },
   }
 }
 
