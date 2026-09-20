@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { scoreColor } from '@/lib/palette'
 import type { ScoreMode } from '@/lib/score'
 import type { RegionStanding } from '@/lib/summary'
-import type { PassId } from '@/lib/types'
+import type { MacroRegionId, PassId } from '@/lib/types'
 import { viewStatePath } from '@/lib/view-state'
 
 /** How each region sits: one bar, one number, one line of context. */
@@ -10,10 +10,12 @@ export default function RegionSplit({
   regions,
   pass,
   mode,
+  onSelect,
 }: {
   regions: RegionStanding[]
   pass: PassId | null
   mode: ScoreMode | null
+  onSelect: (macro: MacroRegionId) => void
 }) {
   return (
     <ol className="flex flex-col">
@@ -21,6 +23,12 @@ export default function RegionSplit({
         <li key={r.macro} className="border-t border-rule last:border-b">
           <Link
             href={viewStatePath({ pass, macro: r.macro, mode, selectedId: null })}
+            onClick={(e) => {
+              // The board holds its own state, so a navigation would leave the
+              // two out of step. The href stays for middle-click and crawlers.
+              e.preventDefault()
+              onSelect(r.macro)
+            }}
             className="block px-1 py-3.5 transition-colors hover:bg-surface"
           >
             <div className="flex items-baseline justify-between gap-4">

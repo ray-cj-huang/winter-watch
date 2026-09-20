@@ -30,7 +30,7 @@ import GlobalLeaders from './GlobalLeaders'
 import RegionSplit from './RegionSplit'
 import ForecastStrip from './ForecastStrip'
 import ResortMap from './ResortMap'
-import ResortTable from './ResortTable'
+import ResortTable, { type TableResort } from './ResortTable'
 import SectionHeader from './SectionHeader'
 import ShareLink from './ShareLink'
 
@@ -132,6 +132,19 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
 
   // A map colours by score, which needs no tier, so it can draw either set.
   const mapRows: MappableResort[] = isBoard ? scored : (summary?.leaders ?? [])
+
+  // Without a tier there is no access glyph, so the column names the pass.
+  const regionRows: TableResort[] = useMemo(
+    () =>
+      (summary?.leaders ?? []).map((l) => ({
+        resort: l.resort,
+        score: l.score,
+        verdict: l.verdict,
+        forecast: forecasts[l.resort.id] ?? null,
+        tag: l.families.length > 1 ? 'Both' : l.families[0],
+      })),
+    [summary, forecasts],
+  )
   const leader = isBoard ? scored[0] : summary?.leaders[0]
   const count = isBoard ? scored.length : (summary?.count ?? 0)
 
@@ -238,7 +251,12 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
           {summary.regions.length > 0 && (
             <div>
               <p className="eyebrow mb-1 text-micro">The split · median score</p>
-              <RegionSplit regions={summary.regions} pass={pass} mode={modeOverride} />
+              <RegionSplit
+                regions={summary.regions}
+                pass={pass}
+                mode={modeOverride}
+                onSelect={(m) => update({ macro: m, selectedId: null, mode: null })}
+              />
             </div>
           )}
           <div>
@@ -345,8 +363,13 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
             />
           ) : (
             <>
-              <p className="eyebrow mb-1 text-micro">Ranked · every pass</p>
-              <GlobalLeaders leaders={summary?.leaders ?? []} />
+              <p className="eyebrow mb-1.5 text-micro">Ranked · every pass</p>
+              <ResortTable
+                scored={regionRows}
+                mode={mode}
+                selectedId={selectedId}
+                onSelect={(id) => update({ selectedId: id })}
+              />
             </>
           )}
         </div>

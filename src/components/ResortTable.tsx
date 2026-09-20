@@ -2,11 +2,20 @@
 
 import { useMemo, useState } from 'react'
 import { SCORE_BANDS, scoreColor, type ScoreLabel } from '@/lib/palette'
-import type { ScoredResort, ScoreMode } from '@/lib/score'
-import type { Access } from '@/lib/types'
+import type { ScoreMode } from '@/lib/score'
+import type { Access, Resort, Score } from '@/lib/types'
+import type { ResortForecast } from '@/lib/forecast'
 
-/** Favored end open; the rest of the split collapses to one line each. */
-const DEFAULT_OPEN: ReadonlySet<ScoreLabel> = new Set(['Favored'])
+/** A row of the table. Access is absent when no tier has been chosen. */
+export interface TableResort {
+  resort: Resort
+  score: Score
+  verdict: ScoreLabel
+  forecast?: ResortForecast | null
+  access?: Access
+  /** Stands in for the access glyph where there is no tier to report. */
+  tag?: string
+}
 
 /**
  * Access compressed to a glyph so a row stays on one line.
@@ -31,14 +40,14 @@ function Row({
   selected,
   onSelect,
 }: {
-  entry: ScoredResort
+  entry: TableResort
   rank: number
   mode: ScoreMode
   selected: boolean
   onSelect: () => void
 }) {
   const { resort, access, forecast } = entry
-  const generous = access.kind === 'unlimited' && !access.blackouts
+  const generous = access?.kind === 'unlimited' && !access.blackouts
 
   // Secondary column carries whatever is most useful in the current mode.
   const aside =
@@ -50,7 +59,7 @@ function Row({
         type="button"
         onClick={onSelect}
         aria-pressed={selected}
-        title={resort.locale + (access.note ? ` — ${access.note}` : '')}
+        title={resort.locale + (access?.note ? ` — ${access.note}` : '')}
         className={`grid w-full grid-cols-[1.7rem_minmax(0,1fr)_2.6rem_2.4rem] items-baseline gap-x-2.5 border-l-2 px-2.5 py-1.5 text-left transition-colors sm:grid-cols-[1.7rem_minmax(0,1fr)_3.2rem_2.6rem_2.4rem] ${
           selected ? 'bg-surface-sunk' : 'bg-surface hover:bg-surface-sunk/60'
         }`}
@@ -62,7 +71,7 @@ function Row({
 
         <span className="min-w-0 truncate text-sm font-medium">
           {resort.name}
-          {access.note && (
+          {access?.note && (
             <span className="ml-1 align-super text-micro text-ink-faint">†</span>
           )}
           <span className="ml-1.5 font-mono text-meta font-normal text-ink-faint">
@@ -79,9 +88,9 @@ function Row({
           className={`tnum text-right font-mono text-meta ${
             generous ? 'font-semibold text-cool' : 'text-ink-faint'
           }`}
-          title={accessTitle(access)}
+          title={access ? accessTitle(access) : undefined}
         >
-          {accessGlyph(access)}
+          {access ? accessGlyph(access) : entry.tag}
         </span>
 
         <span
@@ -101,12 +110,14 @@ export default function ResortTable({
   selectedId,
   onSelect,
 }: {
-  scored: ScoredResort[]
+  scored: TableResort[]
   mode: ScoreMode
   selectedId: string | null
   onSelect: (id: string | null) => void
 }) {
-  const [open, setOpen] = useState<ReadonlySet<ScoreLabel>>(DEFAULT_OPEN)
+  // Null until touched, so the default can follow the data: a region with
+  // nothing favored would otherwise render every band collapsed.
+  const [open, setOpen] = useState<ReadonlySet<ScoreLabel> | null>(null)
 
   // Rank is assigned before bucketing, so numbering stays one continuous
   // ranking across groups rather than restarting in each.
@@ -122,14 +133,18 @@ export default function ResortTable({
   if (scored.length === 0) {
     return (
       <p className="border border-rule bg-surface p-6 text-sm text-ink-soft">
-        No resorts on this pass in this region.
+        Nothing on this tier in this region.
       </p>
     )
   }
 
+  // The best band present is open; the rest collapse to one line each.
+  const fallback: ReadonlySet<ScoreLabel> = new Set(groups.slice(0, 1).map((g) => g.label))
+  const openSet = open ?? fallback
+
   const toggle = (label: ScoreLabel) =>
     setOpen((prev) => {
-      const next = new Set(prev)
+      const next = new Set(prev ?? fallback)
       if (next.has(label)) next.delete(label)
       else next.add(label)
       return next
@@ -138,7 +153,7 @@ export default function ResortTable({
   return (
     <div>
       {groups.map((group) => {
-        const isOpen = open.has(group.label)
+        const isOpen = openSet.has(group.label)
         const panelId = `group-${group.label.replace(/\s+/g, '-').toLowerCase()}`
         return (
           <section key={group.label} className="mb-1.5 last:mb-0">
@@ -197,9 +212,11 @@ export default function ResortTable({
         )
       })}
 
-      <p className="mt-2.5 font-mono text-micro text-ink-faint">
-        ∞ unlimited · * blackouts · † caveat
-      </p>
+      {scored.some((s) => s.access) && (
+        <p className="mt-2.5 font-mono text-micro text-ink-faint">
+          ∞ unlimited · * blackouts · † caveat
+        </p>
+      )}
     </div>
   )
 }
