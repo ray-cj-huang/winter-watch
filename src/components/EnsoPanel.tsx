@@ -17,7 +17,7 @@ const FLAVOR_CONSEQUENCE: Record<EnsoState['flavor'], string> = {
   Mixed:
     'The pattern sits between the two usual flavours, so expect a weaker regional signal than the numbers alone imply.',
 }
-import Nino34Trend from './Nino34Trend'
+import Nino34Chart from './Nino34Chart'
 import SectionHeader from './SectionHeader'
 import ShareLink from './ShareLink'
 
@@ -152,7 +152,7 @@ export default async function EnsoPanel({ enso }: { enso: EnsoState }) {
         {FLAVOR_INLINE[enso.flavor]} event. {FLAVOR_CONSEQUENCE[enso.flavor]}
       </p>
 
-      <Nino34Trend history={await getNino34Record()} />
+      <Nino34Chart series={await getNino34Record()} />
 
       <div className="mt-4">
         <ShareLink cardUrl="/api/og?card=ocean" href="/?view=ocean#ocean" />

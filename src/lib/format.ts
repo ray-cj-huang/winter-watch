@@ -1,9 +1,12 @@
 /**
  * Data keeps ASCII identifiers so they stay easy to grep and compare;
  * anything user-facing gets the real diacritics.
+ *
+ * @remarks
+ * Both halves of the pair need it: a La Nina year reaches the same labels.
  */
 export function nino(text: string): string {
-  return text.replace(/Nino/g, 'Niño')
+  return text.replace(/Nino/g, 'Niño').replace(/Nina/g, 'Niña')
 }
 
 /**

@@ -1,5 +1,14 @@
 import { cacheLife, cacheTag } from 'next/cache'
+import {
+  classifyPhase,
+  classifyStrength,
+  type EnsoPhase,
+  type EnsoStrength,
+} from './enso-scale'
 import type { Unit } from './types'
+
+export { classifyPhase, classifyStrength }
+export type { EnsoPhase, EnsoStrength }
 
 /** CPC refreshes the weekly SST file each Monday; ONI updates monthly. */
 export const CPC_WEEKLY_SST_URL = 'https://www.cpc.ncep.noaa.gov/data/indices/wksst9120.for'
@@ -13,8 +22,6 @@ export interface NinoRegions {
   nino4: number
 }
 
-export type EnsoPhase = 'La Nina' | 'Neutral' | 'El Nino'
-export type EnsoStrength = 'Neutral' | 'Weak' | 'Moderate' | 'Strong' | 'Very Strong'
 /** Eastern-Pacific vs Central-Pacific ("Modoki") flavour. */
 export type EnsoFlavor = 'Eastern Pacific' | 'Central Pacific' | 'Mixed'
 
@@ -101,21 +108,6 @@ export function parseOni(text: string): { season: string; value: number }[] {
   return out
 }
 
-export function classifyStrength(nino34: number): EnsoStrength {
-  const a = Math.abs(nino34)
-  if (a < 0.5) return 'Neutral'
-  if (a < 1.0) return 'Weak'
-  if (a < 1.5) return 'Moderate'
-  if (a < 2.0) return 'Strong'
-  return 'Very Strong'
-}
-
-export function classifyPhase(nino34: number): EnsoPhase {
-  if (nino34 >= 0.5) return 'El Nino'
-  if (nino34 <= -0.5) return 'La Nina'
-  return 'Neutral'
-}
-
 const clamp01 = (n: number): Unit => Math.min(1, Math.max(0, n))
 
 /**
@@ -159,25 +151,49 @@ async function getWeeklyRows(): Promise<WeeklyRow[]> {
   return rows
 }
 
-/** One week of the Nino 3.4 series. */
-export interface Nino34Point {
-  week: string
-  anomaly: number
+/** Days between consecutive CPC weeks, which the record derives its dates from. */
+const WEEK_DAYS = 7
+
+const addDays = (iso: string, days: number) =>
+  new Date(Date.parse(iso) + days * 86_400_000).toISOString().slice(0, 10)
+
+/**
+ * The Nino 3.4 record, dates derived rather than listed.
+ *
+ * @remarks
+ * - The chart is interactive, so unlike the page copy this has to reach the browser.
+ * - Sending 2,351 dates alongside the values costs several times what it saves.
+ */
+export interface Nino34Series {
+  /** ISO date of the first week. */
+  start: string
+  /** Days from one week to the next, applied to `start` for every index. */
+  step: number
+  anomalies: number[]
 }
 
 /**
  * The whole Nino 3.4 record, for the timeline.
  *
  * @remarks
- * Server-side only by convention: the array is large and the chart it feeds
- * renders to a path string, so nothing this size needs to reach the browser.
+ * Every gap in 45 years has been exactly a week, and deriving the dates from
+ * that is what keeps the payload small. A drifting axis would be wrong without
+ * looking wrong, so an uneven file fails loudly instead.
  */
-export async function getNino34Record(): Promise<Nino34Point[]> {
+export async function getNino34Record(): Promise<Nino34Series> {
   'use cache: remote'
   cacheLife('hours')
   cacheTag('noaa', 'noaa-enso')
 
-  return (await getWeeklyRows()).map((r) => ({ week: r.week, anomaly: r.nino34 }))
+  const rows = await getWeeklyRows()
+  const start = rows[0].week
+  const end = rows[rows.length - 1].week
+  const derivedEnd = addDays(start, (rows.length - 1) * WEEK_DAYS)
+  if (derivedEnd !== end) {
+    throw new Error(`CPC weekly file is unevenly spaced: derived ${derivedEnd}, found ${end}`)
+  }
+
+  return { start, step: WEEK_DAYS, anomalies: rows.map((r) => r.nino34) }
 }
 
 /**
