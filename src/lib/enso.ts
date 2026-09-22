@@ -39,7 +39,12 @@ export interface EnsoState extends NinoRegions {
   /** Most recent Oceanic Nino Index 3-month season, e.g. "JJA 2026". */
   oniSeason: string | null
   oniValue: number | null
-  /** Trailing 12 weeks of Nino 3.4 anomalies, oldest first, for the sparkline. */
+  /**
+   * Trailing 12 weeks, oldest first, for the share card's strip.
+   *
+   * @remarks
+   * The page's timeline draws the whole record via {@link getNino34Record}.
+   */
   nino34History: { week: string; anomaly: number }[]
   fetchedAt: string
 }
@@ -138,6 +143,44 @@ async function getText(url: string): Promise<string> {
 }
 
 /**
+ * Every parsable week of the CPC record, back to 1981.
+ *
+ * @remarks
+ * - Shared, so the state and the long record cost one fetch between them.
+ * - Remote, not in-memory: callers throw on failure, so a stampede is an outage.
+ */
+async function getWeeklyRows(): Promise<WeeklyRow[]> {
+  'use cache: remote'
+  cacheLife('hours')
+  cacheTag('noaa', 'noaa-enso')
+
+  const rows = parseWeeklySst(await getText(CPC_WEEKLY_SST_URL))
+  if (rows.length === 0) throw new Error('CPC weekly SST file contained no parsable rows')
+  return rows
+}
+
+/** One week of the Nino 3.4 series. */
+export interface Nino34Point {
+  week: string
+  anomaly: number
+}
+
+/**
+ * The whole Nino 3.4 record, for the timeline.
+ *
+ * @remarks
+ * Server-side only by convention: the array is large and the chart it feeds
+ * renders to a path string, so nothing this size needs to reach the browser.
+ */
+export async function getNino34Record(): Promise<Nino34Point[]> {
+  'use cache: remote'
+  cacheLife('hours')
+  cacheTag('noaa', 'noaa-enso')
+
+  return (await getWeeklyRows()).map((r) => ({ week: r.week, anomaly: r.nino34 }))
+}
+
+/**
  * Live ENSO state from NOAA CPC.
  *
  * @remarks
@@ -150,13 +193,10 @@ export async function getEnsoState(): Promise<EnsoState> {
   cacheLife('hours')
   cacheTag('noaa', 'noaa-enso')
 
-  const [sstText, oniText] = await Promise.all([
-    getText(CPC_WEEKLY_SST_URL),
+  const [rows, oniText] = await Promise.all([
+    getWeeklyRows(),
     getText(CPC_ONI_URL).catch(() => ''),
   ])
-
-  const rows = parseWeeklySst(sstText)
-  if (rows.length === 0) throw new Error('CPC weekly SST file contained no parsable rows')
 
   const latest = rows[rows.length - 1]
   const { flavor, epGradient } = classifyFlavor(latest)

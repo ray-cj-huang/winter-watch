@@ -1,4 +1,4 @@
-import type { EnsoState } from '@/lib/enso'
+import { getNino34Record, type EnsoState } from '@/lib/enso'
 import { nino } from '@/lib/format'
 import { anomalyColor } from '@/lib/palette'
 
@@ -45,7 +45,7 @@ function Vital({
   )
 }
 
-export default function EnsoPanel({ enso }: { enso: EnsoState }) {
+export default async function EnsoPanel({ enso }: { enso: EnsoState }) {
   const regions = [
     { name: nino('Nino 4'), value: enso.nino4 },
     { name: nino('Nino 3.4'), value: enso.nino34 },
@@ -142,8 +142,6 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
         </div>
       </div>
 
-      <Nino34Trend history={enso.nino34History} />
-
       <p className="mt-4 text-sm text-ink-faint">
         Each bar is one Niño region&apos;s sea surface temperature against its
         1991–2020 average. The warmest water sits{' '}
@@ -153,6 +151,8 @@ export default function EnsoPanel({ enso }: { enso: EnsoState }) {
         , which makes this {enso.flavor === 'Eastern Pacific' ? 'an' : 'a'}{' '}
         {FLAVOR_INLINE[enso.flavor]} event. {FLAVOR_CONSEQUENCE[enso.flavor]}
       </p>
+
+      <Nino34Trend history={await getNino34Record()} />
 
       <div className="mt-4">
         <ShareLink cardUrl="/api/og?card=ocean" href="/?view=ocean#ocean" />

@@ -158,7 +158,7 @@ export function blendScore(seasonal: Score, live: Score | null, mode: ScoreMode)
  *
  * @remarks
  * - Live is a regional judgement: it asks whether this region's model has news.
- * - A pool spanning both hemispheres has no single honest answer, so it stays seasonal.
+ * - A pool spanning both hemispheres has no honest answer, so it stays seasonal.
  */
 export function autoScoreMode(
   resorts: Resort[],
