@@ -16,7 +16,7 @@ import { MACRO_LABELS } from '@/lib/map-types'
 import { scoreColor } from '@/lib/palette'
 import { RESORTS, RESORTS_BY_ID } from '@/lib/resorts'
 import { rankInRegion } from '@/lib/score'
-import { absolute, ogImage } from '@/lib/site'
+import { OG_BASE, absolute, ogImage } from '@/lib/site'
 import type { Access, PassId, Resort } from '@/lib/types'
 import { boardVerdict, resortRationale } from '@/lib/verdict'
 import { PASS_IDS, PASS_LABELS, viewStatePath } from '@/lib/view-state'
@@ -46,6 +46,7 @@ export async function generateMetadata({
     description,
     alternates: { canonical: `/resort/${resort.id}` },
     openGraph: {
+      ...OG_BASE,
       title: resort.name,
       description,
       url: `/resort/${resort.id}`,

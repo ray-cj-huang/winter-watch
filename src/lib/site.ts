@@ -24,6 +24,19 @@ export const SITE_NAME = 'El Niño Winter Watch'
 export const SITE_DEK =
   'Live NOAA data on this winter\u2019s El Niño, and which resorts on your pass are best placed for it.'
 
+/**
+ * The Open Graph fields every page has to restate.
+ *
+ * @remarks
+ * A page-level `openGraph` replaces the parent's outright rather than merging,
+ * so anything set only in the layout silently never ships.
+ */
+export const OG_BASE = {
+  type: 'website',
+  siteName: SITE_NAME,
+  locale: 'en_US',
+} as const
+
 export const CARD_SIZE = { width: 1200, height: 630 }
 
 /**

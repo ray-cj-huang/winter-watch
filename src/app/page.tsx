@@ -12,7 +12,7 @@ import { getMapPayload } from '@/lib/map-payload'
 import { MACRO_LABELS } from '@/lib/map-types'
 import { RESORTS } from '@/lib/resorts'
 import { autoScoreMode } from '@/lib/score'
-import { SITE_DEK, SITE_NAME, SITE_URL, ogImage } from '@/lib/site'
+import { OG_BASE, SITE_DEK, SITE_NAME, SITE_URL, ogImage } from '@/lib/site'
 import { summarise } from '@/lib/summary'
 import { boardVerdict } from '@/lib/verdict'
 import {
@@ -95,7 +95,7 @@ export async function generateMetadata({ searchParams }: PageProps<'/'>): Promis
     title: { absolute: isSummary ? SITE_NAME : `${title} — ${SITE_NAME}` },
     description: isSummary ? SITE_DEK : social,
     alternates: { canonical: '/' },
-    openGraph: { title, description: social, url: '/', images: [card] },
+    openGraph: { ...OG_BASE, title, description: social, url: '/', images: [card] },
     twitter: { title, description: social, images: [card] },
   }
 }
