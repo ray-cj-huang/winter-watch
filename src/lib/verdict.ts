@@ -12,8 +12,8 @@ const FAVORED = SCORE_BANDS[0].min
  * One-sentence read on a ranked board, shared by the page and the share card.
  *
  * @remarks
- * - Names the leader rather than the score: a name travels, a number does not.
- * - Says plainly when nothing clears the band instead of dressing up a leader.
+ * - Reports what this model scored, not what the winter will do.
+ * - Carries the number, so the claim is checkable against the board below it.
  */
 export function boardVerdict(
   top: { resort: { name: string }; score: number } | undefined,
@@ -22,13 +22,15 @@ export function boardVerdict(
 ): string {
   if (!top) return 'No destinations here on that tier.'
 
-  const where = pass ? `on the ${PASS_LABELS[pass]} pass` : 'anywhere on either pass'
+  const where = pass ? `on the ${PASS_LABELS[pass]} pass` : 'across both passes'
+  const score = Math.round(top.score)
+
   if (top.score < FAVORED) {
-    return `Nothing ${where} is clearly favored right now. ${top.resort.name} leads at ${Math.round(top.score)}.`
+    return `No destination ${where} scores as favored right now. ${top.resort.name} leads at ${score}.`
   }
   return mode === 'live'
-    ? `The live GFS run puts ${top.resort.name} ahead ${where}.`
-    : `The pattern favors ${top.resort.name} ${where} right now.`
+    ? `In the current model run, ${top.resort.name} scores highest ${where}, at ${score}.`
+    : `${top.resort.name} scores highest ${where} right now, at ${score}.`
 }
 
 /**

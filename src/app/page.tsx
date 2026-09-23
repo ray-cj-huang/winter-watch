@@ -84,7 +84,10 @@ export async function generateMetadata({ searchParams }: PageProps<'/'>): Promis
     social = boardVerdict(ranked.leaders[0], view.pass, mode)
   }
 
-  const card = ogImage(cardPath(params), `${title} — ${SITE_NAME}`)
+  const card = ogImage(
+    cardPath(params),
+    isSummary ? `${SITE_NAME} — every destination scored` : `${title} — ${SITE_NAME}`,
+  )
 
   return {
     // The root page is the layout's own segment, so its title template never
@@ -143,7 +146,7 @@ async function Board({ searchParams }: Pick<PageProps<'/'>, 'searchParams'>) {
 function BoardFallback() {
   return (
     <section className="pt-10">
-      <SectionHeader title="Your pass, mapped to the signal" meta="Loading" />
+      <SectionHeader title="Every destination, scored" meta="Loading" />
       <div className="h-[28rem] animate-pulse border border-rule bg-surface" />
     </section>
   )

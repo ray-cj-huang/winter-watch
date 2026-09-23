@@ -71,7 +71,17 @@ export default async function EnsoPanel({ enso }: { enso: EnsoState }) {
 
   return (
     <section>
-      <SectionHeader title="Ocean state" meta={<>NOAA CPC · week of {observed}</>} />
+      <SectionHeader
+        title="Ocean state"
+        meta={<>NOAA CPC · week of {observed}</>}
+        action={
+          <ShareLink
+            cardUrl="/api/og?card=ocean"
+            href="/?view=ocean#ocean"
+            title="Ocean state — El Niño Winter Watch"
+          />
+        }
+      />
 
       <dl className="grid grid-cols-2 gap-px border border-rule bg-rule sm:grid-cols-3 lg:grid-cols-5">
         <Vital label="Phase" value={nino(enso.phase)} />
@@ -154,9 +164,6 @@ export default async function EnsoPanel({ enso }: { enso: EnsoState }) {
 
       <Nino34Chart series={await getNino34Record()} />
 
-      <div className="mt-4">
-        <ShareLink cardUrl="/api/og?card=ocean" href="/?view=ocean#ocean" />
-      </div>
     </section>
   )
 }

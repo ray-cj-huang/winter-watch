@@ -93,7 +93,7 @@ Links unfurl as rendered cards, generated on demand by `/api/og` from the same
 cached NOAA reads the page uses — a board, a single resort, or the ocean state
 with its trailing weeks of Niño 3.4. Every card carries the same "model, not a
 NOAA product" line the page does, because a card gets reposted without the page
-attached. `Card ↓` next to any view downloads it as a PNG.
+attached. Share opens the system sheet where there is one and copies the link otherwise; Save image downloads the card as a PNG.
 
 ## Pass rosters
 

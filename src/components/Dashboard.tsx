@@ -127,8 +127,9 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
   return (
     <section className="pt-10">
       <SectionHeader
-        title={isBoard ? 'Your pass, mapped to the signal' : 'Where the signal points'}
+        title={isBoard ? 'Your pass, scored' : 'Every destination, scored'}
         meta={<>{count} destination{count === 1 ? '' : 's'}</>}
+        action={<ShareLink cardUrl={cardUrl} />}
       />
 
       <p className="mb-5 font-serif text-xl italic text-ink-soft">
@@ -157,8 +158,7 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
             ]}
             onChange={(m) => update({ mode: m })}
           />
-          <ShareLink label="Share" cardUrl={cardUrl} />
-        </div>
+          </div>
         <Segmented
           label="Region"
           value={macro ?? ALL}
