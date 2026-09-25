@@ -69,6 +69,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.55,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.palisadestahoe.com',
+    mapsCid: '3512395326311175951',
   },
   {
     id: 'mammoth',
@@ -85,6 +86,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.72,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.mammothmountain.com',
+    mapsCid: '984532572758824468',
   },
   {
     id: 'june-mountain',
@@ -101,6 +103,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.70,
     access: ikon(unlimited(), unlimited()),
     website: 'https://www.junemountain.com',
+    mapsCid: '12472212706351234861',
   },
   {
     id: 'big-bear',
@@ -117,6 +120,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.90,
     access: ikon(unlimited(), days(5)),
     website: 'https://www.bigbearmountainresort.com',
+    mapsCid: '14852736288022845485',
   },
   {
     id: 'snow-valley',
@@ -135,6 +139,7 @@ export const RESORTS: Resort[] = [
     // Part of Big Bear Mountain Resort since 2023. snow-valley.com is now only
     // a redirect here, and its HTTPS listener hangs, so link the operator.
     website: 'https://www.bigbearmountainresort.com',
+    mapsCid: '14361405102129333334',
   },
   {
     id: 'alta',
@@ -151,6 +156,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.45,
     access: ikonOnly(unlimitedBlackout()),
     website: 'https://www.alta.com',
+    mapsCid: '1286290659719975528',
   },
   {
     id: 'snowbird',
@@ -167,6 +173,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.45,
     access: ikon(unlimitedBlackout(), days(5, true, 'Snowbird only -- no Alta at the Base tier')),
     website: 'https://www.snowbird.com',
+    mapsCid: '1239747345055935411',
   },
   {
     id: 'solitude',
@@ -183,6 +190,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.45,
     access: ikon(unlimited(), unlimited('No day limit, no blackouts')),
     website: 'https://www.solitudemountain.com',
+    mapsCid: '12665879849043454822',
   },
   {
     id: 'brighton',
@@ -199,6 +207,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.45,
     access: ikon(unlimited(), days(5)),
     website: 'https://www.brightonresort.com',
+    mapsCid: '17260104227983090048',
   },
   {
     id: 'deer-valley',
@@ -215,6 +224,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.42,
     access: ikonOnly(unlimitedBlackout()),
     website: 'https://www.deervalley.com',
+    mapsCid: '15599383167605092162',
   },
   {
     id: 'snowbasin',
@@ -231,6 +241,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.30,
     access: ikonOnly(days(7)),
     website: 'https://www.snowbasin.com',
+    mapsCid: '17777146693740589167',
   },
   {
     id: 'park-city',
@@ -247,6 +258,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.42,
     access: epic(unlimited(), unlimitedBlackout()),
     website: 'https://www.parkcitymountain.com',
+    mapsCid: '18107065371517641647',
   },
   {
     id: 'heavenly',
@@ -263,6 +275,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.58,
     access: epic(unlimited(), unlimitedBlackout()),
     website: 'https://www.skiheavenly.com',
+    mapsCid: '9365339745006710424',
   },
   {
     id: 'northstar',
@@ -279,6 +292,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.53,
     access: epic(unlimited(), unlimitedBlackout()),
     website: 'https://www.northstarcalifornia.com',
+    mapsCid: '17368340445863941698',
   },
   {
     id: 'kirkwood',
@@ -295,6 +309,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.6,
     access: epic(unlimited(), unlimitedBlackout()),
     website: 'https://www.kirkwood.com',
+    mapsCid: '10042446398587528607',
   },
   {
     id: 'aspen-snowmass',
@@ -311,6 +326,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.18,
     access: ikon(days(7), days(5, true, 'Snowmass only -- the other three Aspen mountains are full-Ikon')),
     website: 'https://www.aspensnowmass.com',
+    mapsCid: '14556085601009423712',
   },
   {
     id: 'arapahoe-basin',
@@ -327,6 +343,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.10,
     access: ikon(unlimited(), unlimited('New for 2026-27; spring access runs to 6 Apr')),
     website: 'https://www.arapahoebasin.com',
+    mapsCid: '4315901250611010710',
   },
   {
     id: 'copper',
@@ -343,6 +360,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.08,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.coppercolorado.com',
+    mapsCid: '826188560272832129',
   },
   {
     id: 'winter-park',
@@ -359,6 +377,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.05,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.winterparkresort.com',
+    mapsCid: '11155722552583515926',
   },
   {
     id: 'steamboat',
@@ -375,6 +394,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.05,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.steamboat.com',
+    mapsCid: '2509409991851482915',
   },
   {
     id: 'eldora',
@@ -391,6 +411,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.05,
     access: ikon(unlimited(), days(5)),
     website: 'https://www.eldora.com',
+    mapsCid: '9581354703523199328',
   },
   {
     id: 'taos',
@@ -407,6 +428,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.85,
     access: ikon(days(7), days(5)),
     website: 'https://www.skitaos.com',
+    mapsCid: '14937250196160700661',
   },
   {
     id: 'jackson-hole',
@@ -423,6 +445,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.35,
     access: ikonOnly(days(7)),
     website: 'https://www.jacksonhole.com',
+    mapsCid: '9184661111068696120',
   },
   {
     id: 'big-sky',
@@ -439,6 +462,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.20,
     access: ikon(days(7), days(5)),
     website: 'https://www.bigskyresort.com',
+    mapsCid: '9952576943490083444',
   },
   {
     id: 'sun-valley',
@@ -455,6 +479,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.10,
     access: ikonOnly(days(7)),
     website: 'https://www.sunvalley.com',
+    mapsCid: '11089566349197693928',
   },
   {
     id: 'vail',
@@ -471,6 +496,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.05,
     access: epic(unlimited(), days(10, true, 'Shared 10-day pool with Vail, Beaver Creek and Whistler Blackcomb')),
     website: 'https://www.vail.com',
+    mapsCid: '12088452143259168162',
   },
   {
     id: 'beaver-creek',
@@ -487,6 +513,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.06,
     access: epic(unlimited(), days(10, true, 'Shared 10-day pool with Vail, Beaver Creek and Whistler Blackcomb')),
     website: 'https://www.beavercreek.com',
+    mapsCid: '1301815719999777580',
   },
   {
     id: 'breckenridge',
@@ -503,6 +530,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.08,
     access: epic(unlimited(), unlimited()),
     website: 'https://www.breckenridge.com',
+    mapsCid: '14628577093097438748',
   },
   {
     id: 'keystone',
@@ -519,6 +547,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.08,
     access: epic(unlimited(), unlimited()),
     website: 'https://www.keystoneresort.com',
+    mapsCid: '17521141890308615087',
   },
   {
     id: 'crested-butte',
@@ -535,6 +564,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.2,
     access: epic(unlimited(), unlimited()),
     website: 'https://www.skicb.com',
+    mapsCid: '11998544258301665530',
   },
   {
     id: 'telluride',
@@ -551,6 +581,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.35,
     access: epic(days(7, false, 'Partner resort -- full Epic only, capped at seven days'), null),
     website: 'https://www.tellurideskiresort.com',
+    mapsCid: '11313858139381313643',
   },
   {
     id: 'schweitzer',
@@ -567,6 +598,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.45,
     access: ikon(days(7), days(5)),
     website: 'https://www.schweitzer.com',
+    mapsCid: '13269068513538976197',
   },
   {
     id: 'crystal-mountain',
@@ -583,6 +615,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.60,
     access: ikon(days(7), days(5)),
     website: 'https://www.crystalmountainresort.com',
+    mapsCid: '1398286718362289769',
   },
   {
     id: 'snoqualmie',
@@ -599,6 +632,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.65,
     access: ikon(days(7), days(5)),
     website: 'https://summitatsnoqualmie.com',
+    mapsCid: '6575906626358305580',
   },
   {
     id: 'mt-bachelor',
@@ -615,6 +649,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.45,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.mtbachelor.com',
+    mapsCid: '11105347871646959333',
   },
   {
     id: 'stevens-pass',
@@ -631,6 +666,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.62,
     access: epic(unlimited(), unlimited()),
     website: 'https://www.stevenspass.com',
+    mapsCid: '1093593874317416295',
   },
   {
     id: 'killington',
@@ -647,6 +683,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.40,
     access: ikon(days(7), days(5)),
     website: 'https://www.killington.com',
+    mapsCid: '1520986826401966269',
   },
   {
     id: 'stratton',
@@ -663,6 +700,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.35,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.stratton.com',
+    mapsCid: '12494318488148444734',
   },
   {
     id: 'sugarbush',
@@ -679,6 +717,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.38,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.sugarbush.com',
+    mapsCid: '8708937978645708598',
   },
   {
     id: 'sunday-river',
@@ -695,6 +734,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.40,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.sundayriver.com',
+    mapsCid: '10513099270085308967',
   },
   {
     id: 'sugarloaf',
@@ -711,6 +751,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.42,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.sugarloaf.com',
+    mapsCid: '6645667062425895150',
   },
   {
     id: 'loon',
@@ -727,6 +768,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.38,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.loonmtn.com',
+    mapsCid: '17256832136585090341',
   },
   {
     id: 'snowshoe',
@@ -743,6 +785,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.10,
     access: ikon(unlimited(), days(5)),
     website: 'https://www.snowshoemtn.com',
+    mapsCid: '10172107363387911672',
   },
   {
     id: 'boyne-mountain',
@@ -759,6 +802,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.50,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.boynemountain.com',
+    mapsCid: '3384129457896216913',
   },
   {
     id: 'the-highlands',
@@ -775,6 +819,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.50,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.highlandsharborsprings.com',
+    mapsCid: '13147384612244554708',
   },
   {
     id: 'stowe',
@@ -791,6 +836,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.4,
     access: epic(unlimited(), unlimitedBlackout()),
     website: 'https://www.stowe.com',
+    mapsCid: '11744190593268284221',
   },
   {
     id: 'okemo',
@@ -807,6 +853,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.35,
     access: epic(unlimited(), unlimited()),
     website: 'https://www.okemo.com',
+    mapsCid: '1635002073783552581',
   },
   {
     id: 'mount-snow',
@@ -823,6 +870,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.3,
     access: epic(unlimited(), unlimited()),
     website: 'https://www.mountsnow.com',
+    mapsCid: '6670703696773626555',
   },
   {
     id: 'mount-sunapee',
@@ -839,6 +887,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.32,
     access: epic(unlimited(), unlimited()),
     website: 'https://www.mountsunapee.com',
+    mapsCid: '8423153612288647801',
   },
   {
     id: 'attitash',
@@ -855,6 +904,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.38,
     access: epic(unlimited(), unlimited()),
     website: 'https://www.attitash.com',
+    mapsCid: '11410615242567276124',
   },
   {
     id: 'wildcat',
@@ -871,6 +921,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.4,
     access: epic(unlimited(), unlimited()),
     website: 'https://www.skiwildcat.com',
+    mapsCid: '15507735838727395233',
   },
   {
     id: 'hunter',
@@ -887,6 +938,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.25,
     access: epic(unlimited(), unlimited()),
     website: 'https://www.huntermtn.com',
+    mapsCid: '1651466180990185242',
   },
   {
     id: 'revelstoke',
@@ -903,6 +955,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.55,
     access: ikon(days(7), days(5)),
     website: 'https://www.revelstokemountainresort.com',
+    mapsCid: '7921539357697685564',
   },
   {
     id: 'lake-louise',
@@ -919,6 +972,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.50,
     access: ikon(days(7), days(5)),
     website: 'https://www.skilouise.com',
+    mapsCid: '2581827970448881661',
   },
   {
     id: 'sunshine-village',
@@ -935,6 +989,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.50,
     access: ikon(days(7), days(5)),
     website: 'https://www.skibanff.com',
+    mapsCid: '18304684745713090451',
   },
   {
     id: 'fernie',
@@ -951,6 +1006,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.40,
     access: ikon(days(7), days(5)),
     website: 'https://skifernie.com',
+    mapsCid: '5467337791845971356',
   },
   {
     id: 'kicking-horse',
@@ -967,6 +1023,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.50,
     access: ikon(days(7), days(5)),
     website: 'https://kickinghorseresort.com',
+    mapsCid: '3138882638525164137',
   },
   {
     id: 'sun-peaks',
@@ -983,6 +1040,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.50,
     access: ikon(days(7), days(5)),
     website: 'https://www.sunpeaksresort.com',
+    mapsCid: '12610850577225564770',
   },
   {
     id: 'red-mountain',
@@ -999,6 +1057,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.40,
     access: ikon(days(7), days(5)),
     website: 'https://redresort.com',
+    mapsCid: '4572312381559422687',
   },
   {
     id: 'panorama',
@@ -1015,6 +1074,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.45,
     access: ikon(days(7), days(5)),
     website: 'https://www.panoramaresort.com',
+    mapsCid: '8603694057286137070',
   },
   {
     id: 'whistler-blackcomb',
@@ -1031,6 +1091,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.55,
     access: epic(unlimited(), days(10, true, 'Shared 10-day pool with Vail, Beaver Creek and Whistler Blackcomb')),
     website: 'https://www.whistlerblackcomb.com',
+    mapsCid: '418445190373247914',
   },
   {
     id: 'tremblant',
@@ -1047,6 +1108,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.45,
     access: ikon(days(7), days(5)),
     website: 'https://www.tremblant.ca',
+    mapsCid: '591702043181088249',
   },
   {
     id: 'blue-mountain-on',
@@ -1063,6 +1125,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.55,
     access: ikon(unlimitedBlackout(), days(5)),
     website: 'https://www.bluemountain.ca',
+    mapsCid: '7625931233389859243',
   },
   {
     id: 'mont-sainte-anne',
@@ -1079,6 +1142,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.45,
     access: ikon(days(7), days(5)),
     website: 'https://mont-sainte-anne.com',
+    mapsCid: '17043516295539489818',
   },
   {
     id: 'zermatt',
@@ -1095,6 +1159,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.30,
     access: ikonOnly(days(7)),
     website: 'https://www.zermatt.ch',
+    mapsCid: '1522716745909145259',
   },
   {
     id: 'chamonix',
@@ -1111,6 +1176,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.32,
     access: ikon(days(7), days(5)),
     website: 'https://www.chamonix.com',
+    mapsCid: '17675342570877948511',
   },
   {
     id: 'dolomiti-superski',
@@ -1127,6 +1193,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.10,
     access: ikon(days(7), days(5)),
     website: 'https://www.dolomitisuperski.com',
+    mapsCid: '1486650315755807513',
   },
   {
     id: 'st-anton',
@@ -1143,6 +1210,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.28,
     access: ikon(days(7), days(5)),
     website: 'https://www.stantonamarlberg.com',
+    mapsCid: '6464681696355388239',
   },
   {
     id: 'kitzbuhel',
@@ -1159,6 +1227,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.18,
     access: ikon(days(7), days(5)),
     website: 'https://www.kitzbueheler-alpen.com',
+    mapsCid: '8104606377076856993',
   },
   {
     id: 'grandvalira',
@@ -1175,6 +1244,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.20,
     access: ikon(days(7), days(5)),
     website: 'https://www.grandvalira.com',
+    mapsCid: '12232223193634429408',
   },
   {
     id: 'andermatt-sedrun',
@@ -1191,6 +1261,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.25,
     access: epic(unlimited(), days(5, false)),
     website: 'https://www.andermatt-sedrun.ch',
+    mapsCid: '4736962009526602750',
   },
   {
     id: 'crans-montana',
@@ -1207,6 +1278,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.28,
     access: epic(unlimited(), days(5, false)),
     website: 'https://www.crans-montana.ch',
+    mapsCid: '8608030610086568086',
   },
   {
     id: 'verbier',
@@ -1223,6 +1295,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.3,
     access: epic(days(7, false), days(5, true, 'Five consecutive days · also restricted 6-20 Feb 2027')),
     website: 'https://www.verbier4vallees.ch',
+    mapsCid: '9024531847859291018',
   },
   {
     id: 'les-3-vallees',
@@ -1239,6 +1312,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.3,
     access: epic(days(5, false, 'Partner resort -- full Epic only'), null),
     website: 'https://www.les3vallees.com',
+    mapsCid: '3961224204811235733',
   },
   {
     id: 'niseko',
@@ -1255,6 +1329,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.30,
     access: ikon(days(7), days(5)),
     website: 'https://www.niseko.ne.jp',
+    mapsCid: '1830630086304902938',
   },
   {
     id: 'rusutsu',
@@ -1271,6 +1346,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.30,
     access: { ...ikon(days(7), days(5)), ...epic(days(5, false, 'Five consecutive days'), days(5, false, 'Five consecutive days')) },
     website: 'https://rusutsu.com',
+    mapsCid: '12695999138850247968',
   },
   {
     id: 'arai',
@@ -1287,6 +1363,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.55,
     access: ikon(days(7), days(5)),
     website: 'https://www.lottehotel.com/arai-resort',
+    mapsCid: '4673887154387560346',
   },
   {
     id: 'thredbo',
@@ -1303,6 +1380,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.25,
     access: ikon(days(7), days(5)),
     website: 'https://www.thredbo.com.au',
+    mapsCid: '17612035525503154214',
   },
   {
     id: 'mt-buller',
@@ -1319,6 +1397,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.25,
     access: ikon(days(7), days(5)),
     website: 'https://www.mtbuller.com.au',
+    mapsCid: '2300021798114130408',
   },
   {
     id: 'coronet-peak',
@@ -1335,6 +1414,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.15,
     access: ikon(days(7), days(5)),
     website: 'https://www.coronetpeak.co.nz',
+    mapsCid: '12678805664668792914',
   },
   {
     id: 'perisher',
@@ -1351,6 +1431,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.25,
     access: epic(unlimited(), null),
     website: 'https://www.perisher.com.au',
+    mapsCid: '1447577816570376998',
   },
   {
     id: 'mt-hotham',
@@ -1367,6 +1448,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.25,
     access: epic(unlimited(), null),
     website: 'https://www.mthotham.com.au',
+    mapsCid: '9418929107712038151',
   },
   {
     id: 'falls-creek',
@@ -1383,6 +1465,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: -0.25,
     access: epic(unlimited(), null),
     website: 'https://www.fallscreek.com.au',
+    mapsCid: '17819559201394895595',
   },
   {
     id: 'valle-nevado',
@@ -1399,6 +1482,7 @@ export const RESORTS: Resort[] = [
     ensoSensitivity: 0.55,
     access: ikon(days(7), days(5)),
     website: 'https://vallenevado.com',
+    mapsCid: '6859673572258761074',
   },
 ]
 

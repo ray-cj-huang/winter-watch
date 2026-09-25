@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import type { EnsoState } from '@/lib/enso'
 import { num } from '@/lib/format'
 import type { ResortForecast } from '@/lib/forecast'
+import { mapsUrl } from '@/lib/links'
 import type { MapGeometry, ProjectedPoint } from '@/lib/map-types'
 import { MACRO_LABELS } from '@/lib/map-types'
 import { RESORTS } from '@/lib/resorts'
@@ -307,7 +308,7 @@ export default function Dashboard({ enso, forecasts, maps, points, initialView }
                 </a>
                 <a
                   className="underline underline-offset-4 hover:text-accent"
-                  href={`https://www.google.com/maps/search/?api=1&query=${selected.resort.lat},${selected.resort.lon}`}
+                  href={mapsUrl(selected.resort)}
                   target="_blank"
                   rel="noreferrer"
                 >

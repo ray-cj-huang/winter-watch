@@ -11,6 +11,7 @@ import ShareLink from '@/components/ShareLink'
 import { getEnsoState } from '@/lib/enso'
 import { num } from '@/lib/format'
 import { getForecasts } from '@/lib/forecast'
+import { mapsUrl } from '@/lib/links'
 import { getMacroMap } from '@/lib/map-payload'
 import { MACRO_LABELS } from '@/lib/map-types'
 import { scoreColor } from '@/lib/palette'
@@ -178,6 +179,7 @@ export default async function ResortPage({ params }: PageProps<'/resort/[id]'>) 
           sameAs: resort.website,
           address: { '@type': 'PostalAddress', addressRegion: resort.locale, addressCountry: resort.country },
           geo: { '@type': 'GeoCoordinates', latitude: resort.lat, longitude: resort.lon },
+          hasMap: mapsUrl(resort),
           elevation: `${resort.summitElevationFt} ft`,
         }}
       />
@@ -239,7 +241,7 @@ export default async function ResortPage({ params }: PageProps<'/resort/[id]'>) 
           </a>
           <a
             className="underline underline-offset-4 hover:text-accent"
-            href={`https://www.google.com/maps/search/?api=1&query=${resort.lat},${resort.lon}`}
+            href={mapsUrl(resort)}
             target="_blank"
             rel="noreferrer"
           >

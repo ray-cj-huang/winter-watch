@@ -57,4 +57,11 @@ export interface Resort {
   /** Access by pass tier. A resort absent from `ikon-base` is full-Ikon only. */
   access: Partial<Record<PassId, Access>>
   website: string
+  /**
+   * Google Maps customer ID of the resort's own place listing.
+   *
+   * @remarks
+   * - A string because it overflows `Number.MAX_SAFE_INTEGER`.
+   */
+  mapsCid: string
 }
